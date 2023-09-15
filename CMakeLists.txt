@@ -13,4 +13,4 @@ if (MSVC)
     endif()
 endif()
 
-target_link_libraries(dawnbuild PUBLIC dawn_webgpu_dawn)
+target_link_libraries(dawnbuild PUBLIC webgpu_dawn)
