@@ -7,9 +7,9 @@ target_include_directories(dawnbuild PUBLIC "include")
 
 if (MSVC)
     if (CMAKE_BUILD_TYPE MATCHES Debug)
-        target_link_directories(dawnbuild PUBLIC "lib/windows/x64/debug")
+        target_link_directories(dawnbuild PUBLIC "lib/windows/debug")
     else()
-        target_link_directories(dawnbuild PUBLIC "lib/windows/x64/release")
+        target_link_directories(dawnbuild PUBLIC "lib/windows/release")
     endif()
 endif()
 
