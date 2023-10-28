@@ -25,6 +25,7 @@ namespace wgpu {
     static constexpr uint32_t kLimitU32Undefined = WGPU_LIMIT_U32_UNDEFINED;
     static constexpr uint64_t kLimitU64Undefined = WGPU_LIMIT_U64_UNDEFINED;
     static constexpr uint32_t kMipLevelCountUndefined = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
+    static constexpr uint32_t kQuerySetIndexUndefined = WGPU_QUERY_SET_INDEX_UNDEFINED;
     static constexpr size_t kWholeMapSize = WGPU_WHOLE_MAP_SIZE;
     static constexpr uint64_t kWholeSize = WGPU_WHOLE_SIZE;
 
@@ -112,6 +113,12 @@ namespace wgpu {
         Mapped = 0x00000002,
     };
 
+    enum class CallbackMode : uint32_t {
+        WaitAnyOnly = 0x00000000,
+        AllowProcessEvents = 0x00000001,
+        AllowSpontaneous = 0x00000002,
+    };
+
     enum class CompareFunction : uint32_t {
         Undefined = 0x00000000,
         Never = 0x00000001,
@@ -135,11 +142,6 @@ namespace wgpu {
         Error = 0x00000000,
         Warning = 0x00000001,
         Info = 0x00000002,
-    };
-
-    enum class ComputePassTimestampLocation : uint32_t {
-        Beginning = 0x00000000,
-        End = 0x00000001,
     };
 
     enum class CreatePipelineAsyncStatus : uint32_t {
@@ -189,20 +191,19 @@ namespace wgpu {
         DepthClipControl = 0x00000001,
         Depth32FloatStencil8 = 0x00000002,
         TimestampQuery = 0x00000003,
-        PipelineStatisticsQuery = 0x00000004,
-        TextureCompressionBC = 0x00000005,
-        TextureCompressionETC2 = 0x00000006,
-        TextureCompressionASTC = 0x00000007,
-        IndirectFirstInstance = 0x00000008,
-        ShaderF16 = 0x00000009,
-        RG11B10UfloatRenderable = 0x0000000A,
-        BGRA8UnormStorage = 0x0000000B,
-        Float32Filterable = 0x0000000C,
+        TextureCompressionBC = 0x00000004,
+        TextureCompressionETC2 = 0x00000005,
+        TextureCompressionASTC = 0x00000006,
+        IndirectFirstInstance = 0x00000007,
+        ShaderF16 = 0x00000008,
+        RG11B10UfloatRenderable = 0x00000009,
+        BGRA8UnormStorage = 0x0000000A,
+        Float32Filterable = 0x0000000B,
         DawnInternalUsages = 0x000003EA,
         DawnMultiPlanarFormats = 0x000003EB,
         DawnNative = 0x000003EC,
         ChromiumExperimentalDp4a = 0x000003ED,
-        TimestampQueryInsidePasses = 0x000003EE,
+        ChromiumExperimentalTimestampQueryInsidePasses = 0x000003EE,
         ImplicitDeviceSynchronization = 0x000003EF,
         SurfaceCapabilities = 0x000003F0,
         TransientAttachments = 0x000003F1,
@@ -219,6 +220,7 @@ namespace wgpu {
         MultiPlanarFormatExtendedUsages = 0x000003FC,
         MultiPlanarFormatP010 = 0x000003FD,
         HostMappedPointer = 0x000003FE,
+        MultiPlanarRenderTargets = 0x000003FF,
         SharedTextureMemoryVkDedicatedAllocation = 0x0000044C,
         SharedTextureMemoryAHardwareBuffer = 0x0000044D,
         SharedTextureMemoryDmaBuf = 0x0000044E,
@@ -269,14 +271,6 @@ namespace wgpu {
         Linear = 0x00000001,
     };
 
-    enum class PipelineStatisticName : uint32_t {
-        VertexShaderInvocations = 0x00000000,
-        ClipperInvocations = 0x00000001,
-        ClipperPrimitivesOut = 0x00000002,
-        FragmentShaderInvocations = 0x00000003,
-        ComputeShaderInvocations = 0x00000004,
-    };
-
     enum class PowerPreference : uint32_t {
         Undefined = 0x00000000,
         LowPower = 0x00000001,
@@ -299,8 +293,7 @@ namespace wgpu {
 
     enum class QueryType : uint32_t {
         Occlusion = 0x00000000,
-        PipelineStatistics = 0x00000001,
-        Timestamp = 0x00000002,
+        Timestamp = 0x00000001,
     };
 
     enum class QueueWorkDoneStatus : uint32_t {
@@ -308,11 +301,6 @@ namespace wgpu {
         Error = 0x00000001,
         Unknown = 0x00000002,
         DeviceLost = 0x00000003,
-    };
-
-    enum class RenderPassTimestampLocation : uint32_t {
-        Beginning = 0x00000000,
-        End = 0x00000001,
     };
 
     enum class RequestAdapterStatus : uint32_t {
@@ -344,6 +332,7 @@ namespace wgpu {
         ExternalTextureBindingLayout = 0x0000000D,
         SurfaceDescriptorFromWindowsSwapChainPanel = 0x0000000E,
         RenderPassDescriptorMaxDrawCount = 0x0000000F,
+        DepthStencilStateDepthWriteDefinedDawn = 0x00000010,
         DawnTextureInternalUsageDescriptor = 0x000003E8,
         DawnEncoderInternalUsageDescriptor = 0x000003EB,
         DawnInstanceDescriptor = 0x000003EC,
@@ -359,6 +348,7 @@ namespace wgpu {
         RenderPassPixelLocalStorage = 0x000003F6,
         PipelineLayoutPixelLocalStorage = 0x000003F7,
         BufferHostMappedPointer = 0x000003F8,
+        DawnExperimentalSubgroupLimits = 0x000003F9,
         SharedTextureMemoryVkImageDescriptor = 0x0000044C,
         SharedTextureMemoryVkDedicatedAllocationDescriptor = 0x0000044D,
         SharedTextureMemoryAHardwareBufferDescriptor = 0x0000044E,
@@ -597,6 +587,7 @@ namespace wgpu {
         Sint32x2 = 0x0000001C,
         Sint32x3 = 0x0000001D,
         Sint32x4 = 0x0000001E,
+        Unorm10_10_10_2 = 0x0000001F,
     };
 
     enum class VertexStepMode : uint32_t {
@@ -627,12 +618,6 @@ namespace wgpu {
         Storage = 0x00000080,
         Indirect = 0x00000100,
         QueryResolve = 0x00000200,
-    };
-
-    enum class CallbackMode : uint32_t {
-        Future = 0x00000001,
-        ProcessEvents = 0x00000002,
-        Spontaneous = 0x00000004,
     };
 
     enum class ColorWriteMask : uint32_t {
@@ -715,22 +700,25 @@ namespace wgpu {
     struct BufferBindingLayout;
     struct BufferDescriptor;
     struct BufferHostMappedPointer;
+    struct BufferMapCallbackInfo;
     struct Color;
     struct CommandBufferDescriptor;
     struct CommandEncoderDescriptor;
     struct CompilationMessage;
-    struct ComputePassTimestampWrite;
+    struct ComputePassTimestampWrites;
     struct ConstantEntry;
     struct CopyTextureForBrowserOptions;
     struct DawnAdapterPropertiesPowerPreference;
     struct DawnBufferDescriptorErrorInfoFromWireClient;
     struct DawnCacheDeviceDescriptor;
     struct DawnEncoderInternalUsageDescriptor;
+    struct DawnExperimentalSubgroupLimits;
     struct DawnMultisampleStateRenderToSingleSampled;
     struct DawnRenderPassColorAttachmentRenderToSingleSampled;
     struct DawnShaderModuleSPIRVOptionsDescriptor;
     struct DawnTextureInternalUsageDescriptor;
     struct DawnTogglesDescriptor;
+    struct DepthStencilStateDepthWriteDefinedDawn;
     struct Extent2D;
     struct Extent3D;
     struct ExternalTextureBindingEntry;
@@ -752,7 +740,7 @@ namespace wgpu {
     struct RenderBundleEncoderDescriptor;
     struct RenderPassDepthStencilAttachment;
     struct RenderPassDescriptorMaxDrawCount;
-    struct RenderPassTimestampWrite;
+    struct RenderPassTimestampWrites;
     struct RequestAdapterOptions;
     struct SamplerBindingLayout;
     struct SamplerDescriptor;
@@ -1189,7 +1177,7 @@ namespace wgpu {
 
         void CopyExternalTextureForBrowser(ImageCopyExternalTexture const * source, ImageCopyTexture const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const;
         void CopyTextureForBrowser(ImageCopyTexture const * source, ImageCopyTexture const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const;
-        void OnSubmittedWorkDone(uint64_t signalValue, QueueWorkDoneCallback callback, void * userdata) const;
+        void OnSubmittedWorkDone(QueueWorkDoneCallback callback, void * userdata) const;
         Future OnSubmittedWorkDoneF(QueueWorkDoneCallbackInfo callbackInfo) const;
         void SetLabel(char const * label) const;
         void Submit(size_t commandCount, CommandBuffer const * commands) const;
@@ -1474,6 +1462,13 @@ namespace wgpu {
         void * userdata;
     };
 
+    struct BufferMapCallbackInfo {
+        ChainedStruct const * nextInChain = nullptr;
+        CallbackMode mode;
+        BufferMapCallback callback;
+        void * userdata;
+    };
+
     struct Color {
         double r;
         double g;
@@ -1504,10 +1499,10 @@ namespace wgpu {
         uint64_t utf16Length;
     };
 
-    struct ComputePassTimestampWrite {
+    struct ComputePassTimestampWrites {
         QuerySet querySet;
-        uint32_t queryIndex;
-        ComputePassTimestampLocation location;
+        uint32_t beginningOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
+        uint32_t endOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
     };
 
     struct ConstantEntry {
@@ -1564,6 +1559,16 @@ namespace wgpu {
         alignas(kFirstMemberAlignment) Bool useInternalUsages = false;
     };
 
+    // Can be chained in SupportedLimits
+    struct DawnExperimentalSubgroupLimits : ChainedStructOut {
+        DawnExperimentalSubgroupLimits() {
+            sType = SType::DawnExperimentalSubgroupLimits;
+        }
+        static constexpr size_t kFirstMemberAlignment = detail::ConstexprMax(alignof(ChainedStruct), alignof(uint32_t ));
+        alignas(kFirstMemberAlignment) uint32_t minSubgroupSize = WGPU_LIMIT_U32_UNDEFINED;
+        uint32_t maxSubgroupSize = WGPU_LIMIT_U32_UNDEFINED;
+    };
+
     // Can be chained in MultisampleState
     struct DawnMultisampleStateRenderToSingleSampled : ChainedStruct {
         DawnMultisampleStateRenderToSingleSampled() {
@@ -1612,6 +1617,15 @@ namespace wgpu {
         const char* const * enabledToggles;
         size_t disabledToggleCount = 0;
         const char* const * disabledToggles;
+    };
+
+    // Can be chained in DepthStencilState
+    struct DepthStencilStateDepthWriteDefinedDawn : ChainedStruct {
+        DepthStencilStateDepthWriteDefinedDawn() {
+            sType = SType::DepthStencilStateDepthWriteDefinedDawn;
+        }
+        static constexpr size_t kFirstMemberAlignment = detail::ConstexprMax(alignof(ChainedStruct), alignof(Bool ));
+        alignas(kFirstMemberAlignment) Bool depthWriteDefined;
     };
 
     struct Extent2D {
@@ -1739,8 +1753,6 @@ namespace wgpu {
         char const * label = nullptr;
         QueryType type;
         uint32_t count;
-        PipelineStatisticName const * pipelineStatistics;
-        size_t pipelineStatisticCount = 0;
     };
 
     struct QueueDescriptor {
@@ -1792,10 +1804,10 @@ namespace wgpu {
         alignas(kFirstMemberAlignment) uint64_t maxDrawCount = 50000000;
     };
 
-    struct RenderPassTimestampWrite {
+    struct RenderPassTimestampWrites {
         QuerySet querySet;
-        uint32_t queryIndex;
-        RenderPassTimestampLocation location;
+        uint32_t beginningOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
+        uint32_t endOfPassWriteIndex = WGPU_QUERY_SET_INDEX_UNDEFINED;
     };
 
     struct RequestAdapterOptions {
@@ -2245,8 +2257,7 @@ namespace wgpu {
     struct ComputePassDescriptor {
         ChainedStruct const * nextInChain = nullptr;
         char const * label = nullptr;
-        size_t timestampWriteCount = 0;
-        ComputePassTimestampWrite const * timestampWrites;
+        ComputePassTimestampWrites const * timestampWrites = nullptr;
     };
 
     struct DepthStencilState {
@@ -2435,8 +2446,7 @@ namespace wgpu {
         RenderPassColorAttachment const * colorAttachments;
         RenderPassDepthStencilAttachment const * depthStencilAttachment = nullptr;
         QuerySet occlusionQuerySet;
-        size_t timestampWriteCount = 0;
-        RenderPassTimestampWrite const * timestampWrites;
+        RenderPassTimestampWrites const * timestampWrites = nullptr;
     };
 
     // Can be chained in RenderPassDescriptor
@@ -2490,11 +2500,6 @@ namespace wgpu {
 namespace dawn {
     template<>
     struct IsDawnBitmask<wgpu::BufferUsage> {
-        static constexpr bool enable = true;
-    };
-
-    template<>
-    struct IsDawnBitmask<wgpu::CallbackMode> {
         static constexpr bool enable = true;
     };
 

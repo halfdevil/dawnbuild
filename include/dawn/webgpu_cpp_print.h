@@ -255,6 +255,23 @@ namespace wgpu {
       return o;
   }
   template <typename CharT, typename Traits>
+  std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& o, CallbackMode value) {
+      switch (value) {
+      case CallbackMode::WaitAnyOnly:
+        o << "CallbackMode::WaitAnyOnly";
+        break;
+      case CallbackMode::AllowProcessEvents:
+        o << "CallbackMode::AllowProcessEvents";
+        break;
+      case CallbackMode::AllowSpontaneous:
+        o << "CallbackMode::AllowSpontaneous";
+        break;
+          default:
+            o << "CallbackMode::" << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<CallbackMode>::type>(value);
+      }
+      return o;
+  }
+  template <typename CharT, typename Traits>
   std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& o, CompareFunction value) {
       switch (value) {
       case CompareFunction::Undefined:
@@ -323,20 +340,6 @@ namespace wgpu {
         break;
           default:
             o << "CompilationMessageType::" << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<CompilationMessageType>::type>(value);
-      }
-      return o;
-  }
-  template <typename CharT, typename Traits>
-  std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& o, ComputePassTimestampLocation value) {
-      switch (value) {
-      case ComputePassTimestampLocation::Beginning:
-        o << "ComputePassTimestampLocation::Beginning";
-        break;
-      case ComputePassTimestampLocation::End:
-        o << "ComputePassTimestampLocation::End";
-        break;
-          default:
-            o << "ComputePassTimestampLocation::" << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<ComputePassTimestampLocation>::type>(value);
       }
       return o;
   }
@@ -475,9 +478,6 @@ namespace wgpu {
       case FeatureName::TimestampQuery:
         o << "FeatureName::TimestampQuery";
         break;
-      case FeatureName::PipelineStatisticsQuery:
-        o << "FeatureName::PipelineStatisticsQuery";
-        break;
       case FeatureName::TextureCompressionBC:
         o << "FeatureName::TextureCompressionBC";
         break;
@@ -514,8 +514,8 @@ namespace wgpu {
       case FeatureName::ChromiumExperimentalDp4a:
         o << "FeatureName::ChromiumExperimentalDp4a";
         break;
-      case FeatureName::TimestampQueryInsidePasses:
-        o << "FeatureName::TimestampQueryInsidePasses";
+      case FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
+        o << "FeatureName::ChromiumExperimentalTimestampQueryInsidePasses";
         break;
       case FeatureName::ImplicitDeviceSynchronization:
         o << "FeatureName::ImplicitDeviceSynchronization";
@@ -564,6 +564,9 @@ namespace wgpu {
         break;
       case FeatureName::HostMappedPointer:
         o << "FeatureName::HostMappedPointer";
+        break;
+      case FeatureName::MultiPlanarRenderTargets:
+        o << "FeatureName::MultiPlanarRenderTargets";
         break;
       case FeatureName::SharedTextureMemoryVkDedicatedAllocation:
         o << "FeatureName::SharedTextureMemoryVkDedicatedAllocation";
@@ -709,29 +712,6 @@ namespace wgpu {
       return o;
   }
   template <typename CharT, typename Traits>
-  std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& o, PipelineStatisticName value) {
-      switch (value) {
-      case PipelineStatisticName::VertexShaderInvocations:
-        o << "PipelineStatisticName::VertexShaderInvocations";
-        break;
-      case PipelineStatisticName::ClipperInvocations:
-        o << "PipelineStatisticName::ClipperInvocations";
-        break;
-      case PipelineStatisticName::ClipperPrimitivesOut:
-        o << "PipelineStatisticName::ClipperPrimitivesOut";
-        break;
-      case PipelineStatisticName::FragmentShaderInvocations:
-        o << "PipelineStatisticName::FragmentShaderInvocations";
-        break;
-      case PipelineStatisticName::ComputeShaderInvocations:
-        o << "PipelineStatisticName::ComputeShaderInvocations";
-        break;
-          default:
-            o << "PipelineStatisticName::" << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<PipelineStatisticName>::type>(value);
-      }
-      return o;
-  }
-  template <typename CharT, typename Traits>
   std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& o, PowerPreference value) {
       switch (value) {
       case PowerPreference::Undefined:
@@ -794,9 +774,6 @@ namespace wgpu {
       case QueryType::Occlusion:
         o << "QueryType::Occlusion";
         break;
-      case QueryType::PipelineStatistics:
-        o << "QueryType::PipelineStatistics";
-        break;
       case QueryType::Timestamp:
         o << "QueryType::Timestamp";
         break;
@@ -822,20 +799,6 @@ namespace wgpu {
         break;
           default:
             o << "QueueWorkDoneStatus::" << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<QueueWorkDoneStatus>::type>(value);
-      }
-      return o;
-  }
-  template <typename CharT, typename Traits>
-  std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& o, RenderPassTimestampLocation value) {
-      switch (value) {
-      case RenderPassTimestampLocation::Beginning:
-        o << "RenderPassTimestampLocation::Beginning";
-        break;
-      case RenderPassTimestampLocation::End:
-        o << "RenderPassTimestampLocation::End";
-        break;
-          default:
-            o << "RenderPassTimestampLocation::" << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<RenderPassTimestampLocation>::type>(value);
       }
       return o;
   }
@@ -924,6 +887,9 @@ namespace wgpu {
       case SType::RenderPassDescriptorMaxDrawCount:
         o << "SType::RenderPassDescriptorMaxDrawCount";
         break;
+      case SType::DepthStencilStateDepthWriteDefinedDawn:
+        o << "SType::DepthStencilStateDepthWriteDefinedDawn";
+        break;
       case SType::DawnTextureInternalUsageDescriptor:
         o << "SType::DawnTextureInternalUsageDescriptor";
         break;
@@ -968,6 +934,9 @@ namespace wgpu {
         break;
       case SType::BufferHostMappedPointer:
         o << "SType::BufferHostMappedPointer";
+        break;
+      case SType::DawnExperimentalSubgroupLimits:
+        o << "SType::DawnExperimentalSubgroupLimits";
         break;
       case SType::SharedTextureMemoryVkImageDescriptor:
         o << "SType::SharedTextureMemoryVkImageDescriptor";
@@ -1672,6 +1641,9 @@ namespace wgpu {
       case VertexFormat::Sint32x4:
         o << "VertexFormat::Sint32x4";
         break;
+      case VertexFormat::Unorm10_10_10_2:
+        o << "VertexFormat::Unorm10_10_10_2";
+        break;
           default:
             o << "VertexFormat::" << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<VertexFormat>::type>(value);
       }
@@ -1822,57 +1794,6 @@ namespace wgpu {
         o << "|";
       }
       o << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<BufferUsage>::type>(value);
-    }
-
-    if (moreThanOneBit) {
-      o << ")";
-    }
-    return o;
-  }
-  template <typename CharT, typename Traits>
-  std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& o, CallbackMode value) {
-    o << "CallbackMode::";
-    if (!static_cast<bool>(value)) {
-    o << std::showbase << std::hex << std::setfill('0') << std::setw(4) << 0;
-      return o;
-    }
-
-    bool moreThanOneBit = !HasZeroOrOneBits(value);
-    if (moreThanOneBit) {
-      o << "(";
-    }
-
-    bool first = true;
-  if (value & CallbackMode::Future) {
-    if (!first) {
-      o << "|";
-    }
-    first = false;
-    o << "Future";
-    value &= ~CallbackMode::Future;
-  }
-  if (value & CallbackMode::ProcessEvents) {
-    if (!first) {
-      o << "|";
-    }
-    first = false;
-    o << "ProcessEvents";
-    value &= ~CallbackMode::ProcessEvents;
-  }
-  if (value & CallbackMode::Spontaneous) {
-    if (!first) {
-      o << "|";
-    }
-    first = false;
-    o << "Spontaneous";
-    value &= ~CallbackMode::Spontaneous;
-  }
-
-    if (static_cast<bool>(value)) {
-      if (!first) {
-        o << "|";
-      }
-      o << std::showbase << std::hex << std::setfill('0') << std::setw(4) << static_cast<typename std::underlying_type<CallbackMode>::type>(value);
     }
 
     if (moreThanOneBit) {
