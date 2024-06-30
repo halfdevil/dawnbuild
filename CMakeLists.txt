@@ -25,4 +25,12 @@ if (APPLE)
     endif()
 endif()
 
+if (UNIX)
+    if (CMAKE_BUILD_TYPE MATCHES Debug)
+        target_link_directories(dawnbuild PUBLIC "lib/linux/debug")
+    else()
+        target_link_directories(dawnbuild PUBLIC "lib/linux/release")
+    endif()
+endif()
+
 target_link_libraries(dawnbuild PUBLIC webgpu_dawn)

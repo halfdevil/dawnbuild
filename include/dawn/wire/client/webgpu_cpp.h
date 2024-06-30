@@ -27,8 +27,8 @@
 #ifdef __EMSCRIPTEN__
 #error "Do not include this header. Emscripten already provides headers needed for WebGPU."
 #endif
-#ifndef WEBGPU_CPP_H_
-#define WEBGPU_CPP_H_
+#ifndef DAWN_WIRE_CLIENT_WEBGPU_CPP_H_
+#define DAWN_WIRE_CLIENT_WEBGPU_CPP_H_
 
 #include <cassert>
 #include <cmath>
@@ -37,7 +37,7 @@
 #include <memory>
 #include <functional>
 
-#include "webgpu/webgpu.h"
+#include "dawn/wire/client/webgpu.h"
 #include "webgpu/webgpu_cpp_chained_struct.h"
 #include "webgpu/webgpu_enum_class_bitmasks.h"  // IWYU pragma: export
 
@@ -498,7 +498,6 @@ enum class SType : uint32_t {
     PrimitiveDepthClipControl = WGPUSType_PrimitiveDepthClipControl,
     RenderPassDescriptorMaxDrawCount = WGPUSType_RenderPassDescriptorMaxDrawCount,
     TextureBindingViewDimensionDescriptor = WGPUSType_TextureBindingViewDimensionDescriptor,
-    SurfaceDescriptorFromCanvasHTMLSelector = WGPUSType_SurfaceDescriptorFromCanvasHTMLSelector,
     SurfaceDescriptorFromMetalLayer = WGPUSType_SurfaceDescriptorFromMetalLayer,
     SurfaceDescriptorFromWindowsHWND = WGPUSType_SurfaceDescriptorFromWindowsHWND,
     SurfaceDescriptorFromXlibWindow = WGPUSType_SurfaceDescriptorFromXlibWindow,
@@ -1051,6 +1050,7 @@ class ObjectBase {
 
 
 
+namespace dawn::wire::client {
 
 class Adapter;
 class BindGroup;
@@ -1187,7 +1187,6 @@ struct SurfaceCapabilities;
 struct SurfaceConfiguration;
 struct SurfaceDescriptor;
 struct SurfaceDescriptorFromAndroidNativeWindow;
-struct SurfaceDescriptorFromCanvasHTMLSelector;
 struct SurfaceDescriptorFromMetalLayer;
 struct SurfaceDescriptorFromWaylandSurface;
 struct SurfaceDescriptorFromWindowsHWND;
@@ -3084,18 +3083,6 @@ struct SurfaceDescriptorFromAndroidNativeWindow : ChainedStruct {
 };
 
 // Can be chained in SurfaceDescriptor
-struct SurfaceDescriptorFromCanvasHTMLSelector : ChainedStruct {
-    inline SurfaceDescriptorFromCanvasHTMLSelector();
-
-    struct Init;
-    inline SurfaceDescriptorFromCanvasHTMLSelector(Init&& init);
-    inline operator const WGPUSurfaceDescriptorFromCanvasHTMLSelector&() const noexcept;
-
-    static constexpr size_t kFirstMemberAlignment = detail::ConstexprMax(alignof(ChainedStruct), alignof(char const * ));
-    alignas(kFirstMemberAlignment) char const * selector;
-};
-
-// Can be chained in SurfaceDescriptor
 struct SurfaceDescriptorFromMetalLayer : ChainedStruct {
     inline SurfaceDescriptorFromMetalLayer();
 
@@ -3730,7 +3717,7 @@ struct DeviceDescriptor : protected detail::DeviceDescriptor {
 AdapterInfo::AdapterInfo() = default;
 AdapterInfo::~AdapterInfo() {
     if (this->vendor != nullptr || this->architecture != nullptr || this->device != nullptr || this->description != nullptr) {
-        wgpuAdapterInfoFreeMembers(
+        wgpuDawnWireClientAdapterInfoFreeMembers(
             *reinterpret_cast<WGPUAdapterInfo*>(this));
     }
 }
@@ -3811,7 +3798,7 @@ static_assert(offsetof(AdapterInfo, compatibilityMode) == offsetof(WGPUAdapterIn
 AdapterProperties::AdapterProperties() = default;
 AdapterProperties::~AdapterProperties() {
     if (this->vendorName != nullptr || this->architecture != nullptr || this->name != nullptr || this->driverDescription != nullptr) {
-        wgpuAdapterPropertiesFreeMembers(
+        wgpuDawnWireClientAdapterPropertiesFreeMembers(
             *reinterpret_cast<WGPUAdapterProperties*>(this));
     }
 }
@@ -5260,7 +5247,7 @@ static_assert(offsetof(SharedBufferMemoryDescriptor, label) == offsetof(WGPUShar
 SharedBufferMemoryEndAccessState::SharedBufferMemoryEndAccessState() = default;
 SharedBufferMemoryEndAccessState::~SharedBufferMemoryEndAccessState() {
     if (this->fences != nullptr || this->signaledValues != nullptr) {
-        wgpuSharedBufferMemoryEndAccessStateFreeMembers(
+        wgpuDawnWireClientSharedBufferMemoryEndAccessStateFreeMembers(
             *reinterpret_cast<WGPUSharedBufferMemoryEndAccessState*>(this));
     }
 }
@@ -5714,7 +5701,7 @@ static_assert(offsetof(SharedTextureMemoryDmaBufPlane, stride) == offsetof(WGPUS
 SharedTextureMemoryEndAccessState::SharedTextureMemoryEndAccessState() = default;
 SharedTextureMemoryEndAccessState::~SharedTextureMemoryEndAccessState() {
     if (this->fences != nullptr || this->signaledValues != nullptr) {
-        wgpuSharedTextureMemoryEndAccessStateFreeMembers(
+        wgpuDawnWireClientSharedTextureMemoryEndAccessStateFreeMembers(
             *reinterpret_cast<WGPUSharedTextureMemoryEndAccessState*>(this));
     }
 }
@@ -5952,7 +5939,7 @@ static_assert(offsetof(StorageTextureBindingLayout, viewDimension) == offsetof(W
 SurfaceCapabilities::SurfaceCapabilities() = default;
 SurfaceCapabilities::~SurfaceCapabilities() {
     if (this->formats != nullptr || this->presentModes != nullptr || this->alphaModes != nullptr) {
-        wgpuSurfaceCapabilitiesFreeMembers(
+        wgpuDawnWireClientSurfaceCapabilitiesFreeMembers(
             *reinterpret_cast<WGPUSurfaceCapabilities*>(this));
     }
 }
@@ -6080,26 +6067,6 @@ static_assert(sizeof(SurfaceDescriptorFromAndroidNativeWindow) == sizeof(WGPUSur
 static_assert(alignof(SurfaceDescriptorFromAndroidNativeWindow) == alignof(WGPUSurfaceDescriptorFromAndroidNativeWindow), "alignof mismatch for SurfaceDescriptorFromAndroidNativeWindow");
 static_assert(offsetof(SurfaceDescriptorFromAndroidNativeWindow, window) == offsetof(WGPUSurfaceDescriptorFromAndroidNativeWindow, window),
         "offsetof mismatch for SurfaceDescriptorFromAndroidNativeWindow::window");
-
-// SurfaceDescriptorFromCanvasHTMLSelector implementation
-SurfaceDescriptorFromCanvasHTMLSelector::SurfaceDescriptorFromCanvasHTMLSelector()
-  : ChainedStruct { nullptr, SType::SurfaceDescriptorFromCanvasHTMLSelector } {}
-struct SurfaceDescriptorFromCanvasHTMLSelector::Init {
-    ChainedStruct * const nextInChain;
-    char const * selector;
-};
-SurfaceDescriptorFromCanvasHTMLSelector::SurfaceDescriptorFromCanvasHTMLSelector(SurfaceDescriptorFromCanvasHTMLSelector::Init&& init)
-  : ChainedStruct { init.nextInChain, SType::SurfaceDescriptorFromCanvasHTMLSelector }, 
-    selector(std::move(init.selector)){}
-
-SurfaceDescriptorFromCanvasHTMLSelector::operator const WGPUSurfaceDescriptorFromCanvasHTMLSelector&() const noexcept {
-    return *reinterpret_cast<const WGPUSurfaceDescriptorFromCanvasHTMLSelector*>(this);
-}
-
-static_assert(sizeof(SurfaceDescriptorFromCanvasHTMLSelector) == sizeof(WGPUSurfaceDescriptorFromCanvasHTMLSelector), "sizeof mismatch for SurfaceDescriptorFromCanvasHTMLSelector");
-static_assert(alignof(SurfaceDescriptorFromCanvasHTMLSelector) == alignof(WGPUSurfaceDescriptorFromCanvasHTMLSelector), "alignof mismatch for SurfaceDescriptorFromCanvasHTMLSelector");
-static_assert(offsetof(SurfaceDescriptorFromCanvasHTMLSelector, selector) == offsetof(WGPUSurfaceDescriptorFromCanvasHTMLSelector, selector),
-        "offsetof mismatch for SurfaceDescriptorFromCanvasHTMLSelector::selector");
 
 // SurfaceDescriptorFromMetalLayer implementation
 SurfaceDescriptorFromMetalLayer::SurfaceDescriptorFromMetalLayer()
@@ -6495,7 +6462,7 @@ AdapterPropertiesMemoryHeaps::AdapterPropertiesMemoryHeaps(AdapterPropertiesMemo
     heapInfo(std::move(init.heapInfo)){}
 AdapterPropertiesMemoryHeaps::~AdapterPropertiesMemoryHeaps() {
     if (this->heapInfo != nullptr) {
-        wgpuAdapterPropertiesMemoryHeapsFreeMembers(
+        wgpuDawnWireClientAdapterPropertiesMemoryHeapsFreeMembers(
             *reinterpret_cast<WGPUAdapterPropertiesMemoryHeaps*>(this));
     }
 }
@@ -6665,7 +6632,7 @@ DrmFormatCapabilities::DrmFormatCapabilities(DrmFormatCapabilities::Init&& init)
     properties(std::move(init.properties)){}
 DrmFormatCapabilities::~DrmFormatCapabilities() {
     if (this->properties != nullptr) {
-        wgpuDrmFormatCapabilitiesFreeMembers(
+        wgpuDawnWireClientDrmFormatCapabilitiesFreeMembers(
             *reinterpret_cast<WGPUDrmFormatCapabilities*>(this));
     }
 }
@@ -7365,41 +7332,41 @@ void DeviceDescriptor::SetUncapturedErrorCallback(L callback) {
 // Adapter implementation
 
 Device Adapter::CreateDevice(DeviceDescriptor const * descriptor) const {
-    auto result = wgpuAdapterCreateDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientAdapterCreateDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(descriptor));
     return Device::Acquire(result);
 }
 size_t Adapter::EnumerateFeatures(FeatureName * features) const {
-    auto result = wgpuAdapterEnumerateFeatures(Get(), reinterpret_cast<WGPUFeatureName * >(features));
+    auto result = wgpuDawnWireClientAdapterEnumerateFeatures(Get(), reinterpret_cast<WGPUFeatureName * >(features));
     return result;
 }
 ConvertibleStatus Adapter::GetFormatCapabilities(TextureFormat format, FormatCapabilities * capabilities) const {
-    auto result = wgpuAdapterGetFormatCapabilities(Get(), static_cast<WGPUTextureFormat>(format), reinterpret_cast<WGPUFormatCapabilities * >(capabilities));
+    auto result = wgpuDawnWireClientAdapterGetFormatCapabilities(Get(), static_cast<WGPUTextureFormat>(format), reinterpret_cast<WGPUFormatCapabilities * >(capabilities));
     return static_cast<Status>(result);
 }
 ConvertibleStatus Adapter::GetInfo(AdapterInfo * info) const {
     *info = AdapterInfo();
-    auto result = wgpuAdapterGetInfo(Get(), reinterpret_cast<WGPUAdapterInfo * >(info));
+    auto result = wgpuDawnWireClientAdapterGetInfo(Get(), reinterpret_cast<WGPUAdapterInfo * >(info));
     return static_cast<Status>(result);
 }
 Instance Adapter::GetInstance() const {
-    auto result = wgpuAdapterGetInstance(Get());
+    auto result = wgpuDawnWireClientAdapterGetInstance(Get());
     return Instance::Acquire(result);
 }
 ConvertibleStatus Adapter::GetLimits(SupportedLimits * limits) const {
-    auto result = wgpuAdapterGetLimits(Get(), reinterpret_cast<WGPUSupportedLimits * >(limits));
+    auto result = wgpuDawnWireClientAdapterGetLimits(Get(), reinterpret_cast<WGPUSupportedLimits * >(limits));
     return static_cast<Status>(result);
 }
 ConvertibleStatus Adapter::GetProperties(AdapterProperties * properties) const {
     *properties = AdapterProperties();
-    auto result = wgpuAdapterGetProperties(Get(), reinterpret_cast<WGPUAdapterProperties * >(properties));
+    auto result = wgpuDawnWireClientAdapterGetProperties(Get(), reinterpret_cast<WGPUAdapterProperties * >(properties));
     return static_cast<Status>(result);
 }
 Bool Adapter::HasFeature(FeatureName feature) const {
-    auto result = wgpuAdapterHasFeature(Get(), static_cast<WGPUFeatureName>(feature));
+    auto result = wgpuDawnWireClientAdapterHasFeature(Get(), static_cast<WGPUFeatureName>(feature));
     return result;
 }
 void Adapter::RequestDevice(DeviceDescriptor const * descriptor, RequestDeviceCallback callback, void * userdata) const {
-    wgpuAdapterRequestDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(descriptor), callback, userdata);
+    wgpuDawnWireClientAdapterRequestDevice(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(descriptor), callback, userdata);
 }
 template <typename F, typename T,
           typename Cb,
@@ -7413,7 +7380,7 @@ Future Adapter::RequestDevice(DeviceDescriptor const * options, CallbackMode cal
     };
     callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
     callbackInfo.userdata2 = reinterpret_cast<void*>(userdata);
-    auto result = wgpuAdapterRequestDevice2(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(options), callbackInfo);
+    auto result = wgpuDawnWireClientAdapterRequestDevice2(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(options), callbackInfo);
     return Future {
         result.id
     };
@@ -7433,7 +7400,7 @@ Future Adapter::RequestDevice(DeviceDescriptor const * options, CallbackMode cal
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuAdapterRequestDevice2(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(options), callbackInfo);
+        auto result = wgpuDawnWireClientAdapterRequestDevice2(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(options), callbackInfo);
         return Future {
             result.id
         };
@@ -7445,14 +7412,14 @@ Future Adapter::RequestDevice(DeviceDescriptor const * options, CallbackMode cal
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(lambda);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuAdapterRequestDevice2(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(options), callbackInfo);
+        auto result = wgpuDawnWireClientAdapterRequestDevice2(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(options), callbackInfo);
         return Future {
             result.id
         };
     }
 }
 Future Adapter::RequestDevice(DeviceDescriptor const * options, RequestDeviceCallbackInfo callbackInfo) const {
-    auto result = wgpuAdapterRequestDeviceF(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(options), *reinterpret_cast<WGPURequestDeviceCallbackInfo const*>(&callbackInfo));
+    auto result = wgpuDawnWireClientAdapterRequestDeviceF(Get(), reinterpret_cast<WGPUDeviceDescriptor const * >(options), *reinterpret_cast<WGPURequestDeviceCallbackInfo const*>(&callbackInfo));
     return Future {
             result.id
         };
@@ -7461,12 +7428,12 @@ Future Adapter::RequestDevice(DeviceDescriptor const * options, RequestDeviceCal
 
 void Adapter::WGPUAddRef(WGPUAdapter handle) {
     if (handle != nullptr) {
-        wgpuAdapterAddRef(handle);
+        wgpuDawnWireClientAdapterAddRef(handle);
     }
 }
 void Adapter::WGPURelease(WGPUAdapter handle) {
     if (handle != nullptr) {
-        wgpuAdapterRelease(handle);
+        wgpuDawnWireClientAdapterRelease(handle);
     }
 }
 static_assert(sizeof(Adapter) == sizeof(WGPUAdapter), "sizeof mismatch for Adapter");
@@ -7475,18 +7442,18 @@ static_assert(alignof(Adapter) == alignof(WGPUAdapter), "alignof mismatch for Ad
 // BindGroup implementation
 
 void BindGroup::SetLabel(char const * label) const {
-    wgpuBindGroupSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientBindGroupSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void BindGroup::WGPUAddRef(WGPUBindGroup handle) {
     if (handle != nullptr) {
-        wgpuBindGroupAddRef(handle);
+        wgpuDawnWireClientBindGroupAddRef(handle);
     }
 }
 void BindGroup::WGPURelease(WGPUBindGroup handle) {
     if (handle != nullptr) {
-        wgpuBindGroupRelease(handle);
+        wgpuDawnWireClientBindGroupRelease(handle);
     }
 }
 static_assert(sizeof(BindGroup) == sizeof(WGPUBindGroup), "sizeof mismatch for BindGroup");
@@ -7495,18 +7462,18 @@ static_assert(alignof(BindGroup) == alignof(WGPUBindGroup), "alignof mismatch fo
 // BindGroupLayout implementation
 
 void BindGroupLayout::SetLabel(char const * label) const {
-    wgpuBindGroupLayoutSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientBindGroupLayoutSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void BindGroupLayout::WGPUAddRef(WGPUBindGroupLayout handle) {
     if (handle != nullptr) {
-        wgpuBindGroupLayoutAddRef(handle);
+        wgpuDawnWireClientBindGroupLayoutAddRef(handle);
     }
 }
 void BindGroupLayout::WGPURelease(WGPUBindGroupLayout handle) {
     if (handle != nullptr) {
-        wgpuBindGroupLayoutRelease(handle);
+        wgpuDawnWireClientBindGroupLayoutRelease(handle);
     }
 }
 static_assert(sizeof(BindGroupLayout) == sizeof(WGPUBindGroupLayout), "sizeof mismatch for BindGroupLayout");
@@ -7515,30 +7482,30 @@ static_assert(alignof(BindGroupLayout) == alignof(WGPUBindGroupLayout), "alignof
 // Buffer implementation
 
 void Buffer::Destroy() const {
-    wgpuBufferDestroy(Get());
+    wgpuDawnWireClientBufferDestroy(Get());
 }
 void const * Buffer::GetConstMappedRange(size_t offset, size_t size) const {
-    auto result = wgpuBufferGetConstMappedRange(Get(), offset, size);
+    auto result = wgpuDawnWireClientBufferGetConstMappedRange(Get(), offset, size);
     return result;
 }
 BufferMapState Buffer::GetMapState() const {
-    auto result = wgpuBufferGetMapState(Get());
+    auto result = wgpuDawnWireClientBufferGetMapState(Get());
     return static_cast<BufferMapState>(result);
 }
 void * Buffer::GetMappedRange(size_t offset, size_t size) const {
-    auto result = wgpuBufferGetMappedRange(Get(), offset, size);
+    auto result = wgpuDawnWireClientBufferGetMappedRange(Get(), offset, size);
     return result;
 }
 uint64_t Buffer::GetSize() const {
-    auto result = wgpuBufferGetSize(Get());
+    auto result = wgpuDawnWireClientBufferGetSize(Get());
     return result;
 }
 BufferUsage Buffer::GetUsage() const {
-    auto result = wgpuBufferGetUsage(Get());
+    auto result = wgpuDawnWireClientBufferGetUsage(Get());
     return static_cast<BufferUsage>(result);
 }
 void Buffer::MapAsync(MapMode mode, size_t offset, size_t size, BufferMapCallback callback, void * userdata) const {
-    wgpuBufferMapAsync(Get(), static_cast<WGPUMapMode>(mode), offset, size, callback, userdata);
+    wgpuDawnWireClientBufferMapAsync(Get(), static_cast<WGPUMapMode>(mode), offset, size, callback, userdata);
 }
 template <typename F, typename T,
           typename Cb,
@@ -7552,7 +7519,7 @@ Future Buffer::MapAsync(MapMode mode, size_t offset, size_t size, CallbackMode c
     };
     callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
     callbackInfo.userdata2 = reinterpret_cast<void*>(userdata);
-    auto result = wgpuBufferMapAsync2(Get(), static_cast<WGPUMapMode>(mode), offset, size, callbackInfo);
+    auto result = wgpuDawnWireClientBufferMapAsync2(Get(), static_cast<WGPUMapMode>(mode), offset, size, callbackInfo);
     return Future {
         result.id
     };
@@ -7572,7 +7539,7 @@ Future Buffer::MapAsync(MapMode mode, size_t offset, size_t size, CallbackMode c
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuBufferMapAsync2(Get(), static_cast<WGPUMapMode>(mode), offset, size, callbackInfo);
+        auto result = wgpuDawnWireClientBufferMapAsync2(Get(), static_cast<WGPUMapMode>(mode), offset, size, callbackInfo);
         return Future {
             result.id
         };
@@ -7584,34 +7551,34 @@ Future Buffer::MapAsync(MapMode mode, size_t offset, size_t size, CallbackMode c
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(lambda);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuBufferMapAsync2(Get(), static_cast<WGPUMapMode>(mode), offset, size, callbackInfo);
+        auto result = wgpuDawnWireClientBufferMapAsync2(Get(), static_cast<WGPUMapMode>(mode), offset, size, callbackInfo);
         return Future {
             result.id
         };
     }
 }
 Future Buffer::MapAsync(MapMode mode, size_t offset, size_t size, BufferMapCallbackInfo callbackInfo) const {
-    auto result = wgpuBufferMapAsyncF(Get(), static_cast<WGPUMapMode>(mode), offset, size, *reinterpret_cast<WGPUBufferMapCallbackInfo const*>(&callbackInfo));
+    auto result = wgpuDawnWireClientBufferMapAsyncF(Get(), static_cast<WGPUMapMode>(mode), offset, size, *reinterpret_cast<WGPUBufferMapCallbackInfo const*>(&callbackInfo));
     return Future {
             result.id
         };
 }
 void Buffer::SetLabel(char const * label) const {
-    wgpuBufferSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientBufferSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 void Buffer::Unmap() const {
-    wgpuBufferUnmap(Get());
+    wgpuDawnWireClientBufferUnmap(Get());
 }
 
 
 void Buffer::WGPUAddRef(WGPUBuffer handle) {
     if (handle != nullptr) {
-        wgpuBufferAddRef(handle);
+        wgpuDawnWireClientBufferAddRef(handle);
     }
 }
 void Buffer::WGPURelease(WGPUBuffer handle) {
     if (handle != nullptr) {
-        wgpuBufferRelease(handle);
+        wgpuDawnWireClientBufferRelease(handle);
     }
 }
 static_assert(sizeof(Buffer) == sizeof(WGPUBuffer), "sizeof mismatch for Buffer");
@@ -7620,18 +7587,18 @@ static_assert(alignof(Buffer) == alignof(WGPUBuffer), "alignof mismatch for Buff
 // CommandBuffer implementation
 
 void CommandBuffer::SetLabel(char const * label) const {
-    wgpuCommandBufferSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientCommandBufferSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void CommandBuffer::WGPUAddRef(WGPUCommandBuffer handle) {
     if (handle != nullptr) {
-        wgpuCommandBufferAddRef(handle);
+        wgpuDawnWireClientCommandBufferAddRef(handle);
     }
 }
 void CommandBuffer::WGPURelease(WGPUCommandBuffer handle) {
     if (handle != nullptr) {
-        wgpuCommandBufferRelease(handle);
+        wgpuDawnWireClientCommandBufferRelease(handle);
     }
 }
 static_assert(sizeof(CommandBuffer) == sizeof(WGPUCommandBuffer), "sizeof mismatch for CommandBuffer");
@@ -7640,66 +7607,66 @@ static_assert(alignof(CommandBuffer) == alignof(WGPUCommandBuffer), "alignof mis
 // CommandEncoder implementation
 
 ComputePassEncoder CommandEncoder::BeginComputePass(ComputePassDescriptor const * descriptor) const {
-    auto result = wgpuCommandEncoderBeginComputePass(Get(), reinterpret_cast<WGPUComputePassDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientCommandEncoderBeginComputePass(Get(), reinterpret_cast<WGPUComputePassDescriptor const * >(descriptor));
     return ComputePassEncoder::Acquire(result);
 }
 RenderPassEncoder CommandEncoder::BeginRenderPass(RenderPassDescriptor const * descriptor) const {
-    auto result = wgpuCommandEncoderBeginRenderPass(Get(), reinterpret_cast<WGPURenderPassDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientCommandEncoderBeginRenderPass(Get(), reinterpret_cast<WGPURenderPassDescriptor const * >(descriptor));
     return RenderPassEncoder::Acquire(result);
 }
 void CommandEncoder::ClearBuffer(Buffer const& buffer, uint64_t offset, uint64_t size) const {
-    wgpuCommandEncoderClearBuffer(Get(), buffer.Get(), offset, size);
+    wgpuDawnWireClientCommandEncoderClearBuffer(Get(), buffer.Get(), offset, size);
 }
 void CommandEncoder::CopyBufferToBuffer(Buffer const& source, uint64_t sourceOffset, Buffer const& destination, uint64_t destinationOffset, uint64_t size) const {
-    wgpuCommandEncoderCopyBufferToBuffer(Get(), source.Get(), sourceOffset, destination.Get(), destinationOffset, size);
+    wgpuDawnWireClientCommandEncoderCopyBufferToBuffer(Get(), source.Get(), sourceOffset, destination.Get(), destinationOffset, size);
 }
 void CommandEncoder::CopyBufferToTexture(ImageCopyBuffer const * source, ImageCopyTexture const * destination, Extent3D const * copySize) const {
-    wgpuCommandEncoderCopyBufferToTexture(Get(), reinterpret_cast<WGPUImageCopyBuffer const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize));
+    wgpuDawnWireClientCommandEncoderCopyBufferToTexture(Get(), reinterpret_cast<WGPUImageCopyBuffer const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize));
 }
 void CommandEncoder::CopyTextureToBuffer(ImageCopyTexture const * source, ImageCopyBuffer const * destination, Extent3D const * copySize) const {
-    wgpuCommandEncoderCopyTextureToBuffer(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyBuffer const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize));
+    wgpuDawnWireClientCommandEncoderCopyTextureToBuffer(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyBuffer const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize));
 }
 void CommandEncoder::CopyTextureToTexture(ImageCopyTexture const * source, ImageCopyTexture const * destination, Extent3D const * copySize) const {
-    wgpuCommandEncoderCopyTextureToTexture(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize));
+    wgpuDawnWireClientCommandEncoderCopyTextureToTexture(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize));
 }
 CommandBuffer CommandEncoder::Finish(CommandBufferDescriptor const * descriptor) const {
-    auto result = wgpuCommandEncoderFinish(Get(), reinterpret_cast<WGPUCommandBufferDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientCommandEncoderFinish(Get(), reinterpret_cast<WGPUCommandBufferDescriptor const * >(descriptor));
     return CommandBuffer::Acquire(result);
 }
 void CommandEncoder::InjectValidationError(char const * message) const {
-    wgpuCommandEncoderInjectValidationError(Get(), reinterpret_cast<char const * >(message));
+    wgpuDawnWireClientCommandEncoderInjectValidationError(Get(), reinterpret_cast<char const * >(message));
 }
 void CommandEncoder::InsertDebugMarker(char const * markerLabel) const {
-    wgpuCommandEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
+    wgpuDawnWireClientCommandEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
 }
 void CommandEncoder::PopDebugGroup() const {
-    wgpuCommandEncoderPopDebugGroup(Get());
+    wgpuDawnWireClientCommandEncoderPopDebugGroup(Get());
 }
 void CommandEncoder::PushDebugGroup(char const * groupLabel) const {
-    wgpuCommandEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
+    wgpuDawnWireClientCommandEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
 }
 void CommandEncoder::ResolveQuerySet(QuerySet const& querySet, uint32_t firstQuery, uint32_t queryCount, Buffer const& destination, uint64_t destinationOffset) const {
-    wgpuCommandEncoderResolveQuerySet(Get(), querySet.Get(), firstQuery, queryCount, destination.Get(), destinationOffset);
+    wgpuDawnWireClientCommandEncoderResolveQuerySet(Get(), querySet.Get(), firstQuery, queryCount, destination.Get(), destinationOffset);
 }
 void CommandEncoder::SetLabel(char const * label) const {
-    wgpuCommandEncoderSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientCommandEncoderSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 void CommandEncoder::WriteBuffer(Buffer const& buffer, uint64_t bufferOffset, uint8_t const * data, uint64_t size) const {
-    wgpuCommandEncoderWriteBuffer(Get(), buffer.Get(), bufferOffset, reinterpret_cast<uint8_t const * >(data), size);
+    wgpuDawnWireClientCommandEncoderWriteBuffer(Get(), buffer.Get(), bufferOffset, reinterpret_cast<uint8_t const * >(data), size);
 }
 void CommandEncoder::WriteTimestamp(QuerySet const& querySet, uint32_t queryIndex) const {
-    wgpuCommandEncoderWriteTimestamp(Get(), querySet.Get(), queryIndex);
+    wgpuDawnWireClientCommandEncoderWriteTimestamp(Get(), querySet.Get(), queryIndex);
 }
 
 
 void CommandEncoder::WGPUAddRef(WGPUCommandEncoder handle) {
     if (handle != nullptr) {
-        wgpuCommandEncoderAddRef(handle);
+        wgpuDawnWireClientCommandEncoderAddRef(handle);
     }
 }
 void CommandEncoder::WGPURelease(WGPUCommandEncoder handle) {
     if (handle != nullptr) {
-        wgpuCommandEncoderRelease(handle);
+        wgpuDawnWireClientCommandEncoderRelease(handle);
     }
 }
 static_assert(sizeof(CommandEncoder) == sizeof(WGPUCommandEncoder), "sizeof mismatch for CommandEncoder");
@@ -7708,45 +7675,45 @@ static_assert(alignof(CommandEncoder) == alignof(WGPUCommandEncoder), "alignof m
 // ComputePassEncoder implementation
 
 void ComputePassEncoder::DispatchWorkgroups(uint32_t workgroupCountX, uint32_t workgroupCountY, uint32_t workgroupCountZ) const {
-    wgpuComputePassEncoderDispatchWorkgroups(Get(), workgroupCountX, workgroupCountY, workgroupCountZ);
+    wgpuDawnWireClientComputePassEncoderDispatchWorkgroups(Get(), workgroupCountX, workgroupCountY, workgroupCountZ);
 }
 void ComputePassEncoder::DispatchWorkgroupsIndirect(Buffer const& indirectBuffer, uint64_t indirectOffset) const {
-    wgpuComputePassEncoderDispatchWorkgroupsIndirect(Get(), indirectBuffer.Get(), indirectOffset);
+    wgpuDawnWireClientComputePassEncoderDispatchWorkgroupsIndirect(Get(), indirectBuffer.Get(), indirectOffset);
 }
 void ComputePassEncoder::End() const {
-    wgpuComputePassEncoderEnd(Get());
+    wgpuDawnWireClientComputePassEncoderEnd(Get());
 }
 void ComputePassEncoder::InsertDebugMarker(char const * markerLabel) const {
-    wgpuComputePassEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
+    wgpuDawnWireClientComputePassEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
 }
 void ComputePassEncoder::PopDebugGroup() const {
-    wgpuComputePassEncoderPopDebugGroup(Get());
+    wgpuDawnWireClientComputePassEncoderPopDebugGroup(Get());
 }
 void ComputePassEncoder::PushDebugGroup(char const * groupLabel) const {
-    wgpuComputePassEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
+    wgpuDawnWireClientComputePassEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
 }
 void ComputePassEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
-    wgpuComputePassEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
+    wgpuDawnWireClientComputePassEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
 }
 void ComputePassEncoder::SetLabel(char const * label) const {
-    wgpuComputePassEncoderSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientComputePassEncoderSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 void ComputePassEncoder::SetPipeline(ComputePipeline const& pipeline) const {
-    wgpuComputePassEncoderSetPipeline(Get(), pipeline.Get());
+    wgpuDawnWireClientComputePassEncoderSetPipeline(Get(), pipeline.Get());
 }
 void ComputePassEncoder::WriteTimestamp(QuerySet const& querySet, uint32_t queryIndex) const {
-    wgpuComputePassEncoderWriteTimestamp(Get(), querySet.Get(), queryIndex);
+    wgpuDawnWireClientComputePassEncoderWriteTimestamp(Get(), querySet.Get(), queryIndex);
 }
 
 
 void ComputePassEncoder::WGPUAddRef(WGPUComputePassEncoder handle) {
     if (handle != nullptr) {
-        wgpuComputePassEncoderAddRef(handle);
+        wgpuDawnWireClientComputePassEncoderAddRef(handle);
     }
 }
 void ComputePassEncoder::WGPURelease(WGPUComputePassEncoder handle) {
     if (handle != nullptr) {
-        wgpuComputePassEncoderRelease(handle);
+        wgpuDawnWireClientComputePassEncoderRelease(handle);
     }
 }
 static_assert(sizeof(ComputePassEncoder) == sizeof(WGPUComputePassEncoder), "sizeof mismatch for ComputePassEncoder");
@@ -7755,22 +7722,22 @@ static_assert(alignof(ComputePassEncoder) == alignof(WGPUComputePassEncoder), "a
 // ComputePipeline implementation
 
 BindGroupLayout ComputePipeline::GetBindGroupLayout(uint32_t groupIndex) const {
-    auto result = wgpuComputePipelineGetBindGroupLayout(Get(), groupIndex);
+    auto result = wgpuDawnWireClientComputePipelineGetBindGroupLayout(Get(), groupIndex);
     return BindGroupLayout::Acquire(result);
 }
 void ComputePipeline::SetLabel(char const * label) const {
-    wgpuComputePipelineSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientComputePipelineSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void ComputePipeline::WGPUAddRef(WGPUComputePipeline handle) {
     if (handle != nullptr) {
-        wgpuComputePipelineAddRef(handle);
+        wgpuDawnWireClientComputePipelineAddRef(handle);
     }
 }
 void ComputePipeline::WGPURelease(WGPUComputePipeline handle) {
     if (handle != nullptr) {
-        wgpuComputePipelineRelease(handle);
+        wgpuDawnWireClientComputePipelineRelease(handle);
     }
 }
 static_assert(sizeof(ComputePipeline) == sizeof(WGPUComputePipeline), "sizeof mismatch for ComputePipeline");
@@ -7779,27 +7746,27 @@ static_assert(alignof(ComputePipeline) == alignof(WGPUComputePipeline), "alignof
 // Device implementation
 
 BindGroup Device::CreateBindGroup(BindGroupDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateBindGroup(Get(), reinterpret_cast<WGPUBindGroupDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateBindGroup(Get(), reinterpret_cast<WGPUBindGroupDescriptor const * >(descriptor));
     return BindGroup::Acquire(result);
 }
 BindGroupLayout Device::CreateBindGroupLayout(BindGroupLayoutDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateBindGroupLayout(Get(), reinterpret_cast<WGPUBindGroupLayoutDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateBindGroupLayout(Get(), reinterpret_cast<WGPUBindGroupLayoutDescriptor const * >(descriptor));
     return BindGroupLayout::Acquire(result);
 }
 Buffer Device::CreateBuffer(BufferDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const * >(descriptor));
     return Buffer::Acquire(result);
 }
 CommandEncoder Device::CreateCommandEncoder(CommandEncoderDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateCommandEncoder(Get(), reinterpret_cast<WGPUCommandEncoderDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateCommandEncoder(Get(), reinterpret_cast<WGPUCommandEncoderDescriptor const * >(descriptor));
     return CommandEncoder::Acquire(result);
 }
 ComputePipeline Device::CreateComputePipeline(ComputePipelineDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateComputePipeline(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateComputePipeline(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor));
     return ComputePipeline::Acquire(result);
 }
 void Device::CreateComputePipelineAsync(ComputePipelineDescriptor const * descriptor, CreateComputePipelineAsyncCallback callback, void * userdata) const {
-    wgpuDeviceCreateComputePipelineAsync(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callback, userdata);
+    wgpuDawnWireClientDeviceCreateComputePipelineAsync(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callback, userdata);
 }
 template <typename F, typename T,
           typename Cb,
@@ -7813,7 +7780,7 @@ Future Device::CreateComputePipelineAsync(ComputePipelineDescriptor const * desc
     };
     callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
     callbackInfo.userdata2 = reinterpret_cast<void*>(userdata);
-    auto result = wgpuDeviceCreateComputePipelineAsync2(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callbackInfo);
+    auto result = wgpuDawnWireClientDeviceCreateComputePipelineAsync2(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callbackInfo);
     return Future {
         result.id
     };
@@ -7833,7 +7800,7 @@ Future Device::CreateComputePipelineAsync(ComputePipelineDescriptor const * desc
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuDeviceCreateComputePipelineAsync2(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callbackInfo);
+        auto result = wgpuDawnWireClientDeviceCreateComputePipelineAsync2(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callbackInfo);
         return Future {
             result.id
         };
@@ -7845,56 +7812,56 @@ Future Device::CreateComputePipelineAsync(ComputePipelineDescriptor const * desc
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(lambda);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuDeviceCreateComputePipelineAsync2(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callbackInfo);
+        auto result = wgpuDawnWireClientDeviceCreateComputePipelineAsync2(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), callbackInfo);
         return Future {
             result.id
         };
     }
 }
 Future Device::CreateComputePipelineAsync(ComputePipelineDescriptor const * descriptor, CreateComputePipelineAsyncCallbackInfo callbackInfo) const {
-    auto result = wgpuDeviceCreateComputePipelineAsyncF(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), *reinterpret_cast<WGPUCreateComputePipelineAsyncCallbackInfo const*>(&callbackInfo));
+    auto result = wgpuDawnWireClientDeviceCreateComputePipelineAsyncF(Get(), reinterpret_cast<WGPUComputePipelineDescriptor const * >(descriptor), *reinterpret_cast<WGPUCreateComputePipelineAsyncCallbackInfo const*>(&callbackInfo));
     return Future {
             result.id
         };
 }
 Buffer Device::CreateErrorBuffer(BufferDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateErrorBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateErrorBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const * >(descriptor));
     return Buffer::Acquire(result);
 }
 ExternalTexture Device::CreateErrorExternalTexture() const {
-    auto result = wgpuDeviceCreateErrorExternalTexture(Get());
+    auto result = wgpuDawnWireClientDeviceCreateErrorExternalTexture(Get());
     return ExternalTexture::Acquire(result);
 }
 ShaderModule Device::CreateErrorShaderModule(ShaderModuleDescriptor const * descriptor, char const * errorMessage) const {
-    auto result = wgpuDeviceCreateErrorShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const * >(descriptor), reinterpret_cast<char const * >(errorMessage));
+    auto result = wgpuDawnWireClientDeviceCreateErrorShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const * >(descriptor), reinterpret_cast<char const * >(errorMessage));
     return ShaderModule::Acquire(result);
 }
 Texture Device::CreateErrorTexture(TextureDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateErrorTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateErrorTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
     return Texture::Acquire(result);
 }
 ExternalTexture Device::CreateExternalTexture(ExternalTextureDescriptor const * externalTextureDescriptor) const {
-    auto result = wgpuDeviceCreateExternalTexture(Get(), reinterpret_cast<WGPUExternalTextureDescriptor const * >(externalTextureDescriptor));
+    auto result = wgpuDawnWireClientDeviceCreateExternalTexture(Get(), reinterpret_cast<WGPUExternalTextureDescriptor const * >(externalTextureDescriptor));
     return ExternalTexture::Acquire(result);
 }
 PipelineLayout Device::CreatePipelineLayout(PipelineLayoutDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreatePipelineLayout(Get(), reinterpret_cast<WGPUPipelineLayoutDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreatePipelineLayout(Get(), reinterpret_cast<WGPUPipelineLayoutDescriptor const * >(descriptor));
     return PipelineLayout::Acquire(result);
 }
 QuerySet Device::CreateQuerySet(QuerySetDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateQuerySet(Get(), reinterpret_cast<WGPUQuerySetDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateQuerySet(Get(), reinterpret_cast<WGPUQuerySetDescriptor const * >(descriptor));
     return QuerySet::Acquire(result);
 }
 RenderBundleEncoder Device::CreateRenderBundleEncoder(RenderBundleEncoderDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateRenderBundleEncoder(Get(), reinterpret_cast<WGPURenderBundleEncoderDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateRenderBundleEncoder(Get(), reinterpret_cast<WGPURenderBundleEncoderDescriptor const * >(descriptor));
     return RenderBundleEncoder::Acquire(result);
 }
 RenderPipeline Device::CreateRenderPipeline(RenderPipelineDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateRenderPipeline(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateRenderPipeline(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor));
     return RenderPipeline::Acquire(result);
 }
 void Device::CreateRenderPipelineAsync(RenderPipelineDescriptor const * descriptor, CreateRenderPipelineAsyncCallback callback, void * userdata) const {
-    wgpuDeviceCreateRenderPipelineAsync(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callback, userdata);
+    wgpuDawnWireClientDeviceCreateRenderPipelineAsync(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callback, userdata);
 }
 template <typename F, typename T,
           typename Cb,
@@ -7908,7 +7875,7 @@ Future Device::CreateRenderPipelineAsync(RenderPipelineDescriptor const * descri
     };
     callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
     callbackInfo.userdata2 = reinterpret_cast<void*>(userdata);
-    auto result = wgpuDeviceCreateRenderPipelineAsync2(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callbackInfo);
+    auto result = wgpuDawnWireClientDeviceCreateRenderPipelineAsync2(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callbackInfo);
     return Future {
         result.id
     };
@@ -7928,7 +7895,7 @@ Future Device::CreateRenderPipelineAsync(RenderPipelineDescriptor const * descri
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuDeviceCreateRenderPipelineAsync2(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callbackInfo);
+        auto result = wgpuDawnWireClientDeviceCreateRenderPipelineAsync2(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callbackInfo);
         return Future {
             result.id
         };
@@ -7940,85 +7907,85 @@ Future Device::CreateRenderPipelineAsync(RenderPipelineDescriptor const * descri
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(lambda);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuDeviceCreateRenderPipelineAsync2(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callbackInfo);
+        auto result = wgpuDawnWireClientDeviceCreateRenderPipelineAsync2(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), callbackInfo);
         return Future {
             result.id
         };
     }
 }
 Future Device::CreateRenderPipelineAsync(RenderPipelineDescriptor const * descriptor, CreateRenderPipelineAsyncCallbackInfo callbackInfo) const {
-    auto result = wgpuDeviceCreateRenderPipelineAsyncF(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), *reinterpret_cast<WGPUCreateRenderPipelineAsyncCallbackInfo const*>(&callbackInfo));
+    auto result = wgpuDawnWireClientDeviceCreateRenderPipelineAsyncF(Get(), reinterpret_cast<WGPURenderPipelineDescriptor const * >(descriptor), *reinterpret_cast<WGPUCreateRenderPipelineAsyncCallbackInfo const*>(&callbackInfo));
     return Future {
             result.id
         };
 }
 Sampler Device::CreateSampler(SamplerDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateSampler(Get(), reinterpret_cast<WGPUSamplerDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateSampler(Get(), reinterpret_cast<WGPUSamplerDescriptor const * >(descriptor));
     return Sampler::Acquire(result);
 }
 ShaderModule Device::CreateShaderModule(ShaderModuleDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateShaderModule(Get(), reinterpret_cast<WGPUShaderModuleDescriptor const * >(descriptor));
     return ShaderModule::Acquire(result);
 }
 SwapChain Device::CreateSwapChain(Surface const& surface, SwapChainDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateSwapChain(Get(), surface.Get(), reinterpret_cast<WGPUSwapChainDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateSwapChain(Get(), surface.Get(), reinterpret_cast<WGPUSwapChainDescriptor const * >(descriptor));
     return SwapChain::Acquire(result);
 }
 Texture Device::CreateTexture(TextureDescriptor const * descriptor) const {
-    auto result = wgpuDeviceCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
     return Texture::Acquire(result);
 }
 void Device::Destroy() const {
-    wgpuDeviceDestroy(Get());
+    wgpuDawnWireClientDeviceDestroy(Get());
 }
 size_t Device::EnumerateFeatures(FeatureName * features) const {
-    auto result = wgpuDeviceEnumerateFeatures(Get(), reinterpret_cast<WGPUFeatureName * >(features));
+    auto result = wgpuDawnWireClientDeviceEnumerateFeatures(Get(), reinterpret_cast<WGPUFeatureName * >(features));
     return result;
 }
 void Device::ForceLoss(DeviceLostReason type, char const * message) const {
-    wgpuDeviceForceLoss(Get(), static_cast<WGPUDeviceLostReason>(type), reinterpret_cast<char const * >(message));
+    wgpuDawnWireClientDeviceForceLoss(Get(), static_cast<WGPUDeviceLostReason>(type), reinterpret_cast<char const * >(message));
 }
 ConvertibleStatus Device::GetAHardwareBufferProperties(void * handle, AHardwareBufferProperties * properties) const {
-    auto result = wgpuDeviceGetAHardwareBufferProperties(Get(), handle, reinterpret_cast<WGPUAHardwareBufferProperties * >(properties));
+    auto result = wgpuDawnWireClientDeviceGetAHardwareBufferProperties(Get(), handle, reinterpret_cast<WGPUAHardwareBufferProperties * >(properties));
     return static_cast<Status>(result);
 }
 Adapter Device::GetAdapter() const {
-    auto result = wgpuDeviceGetAdapter(Get());
+    auto result = wgpuDawnWireClientDeviceGetAdapter(Get());
     return Adapter::Acquire(result);
 }
 ConvertibleStatus Device::GetLimits(SupportedLimits * limits) const {
-    auto result = wgpuDeviceGetLimits(Get(), reinterpret_cast<WGPUSupportedLimits * >(limits));
+    auto result = wgpuDawnWireClientDeviceGetLimits(Get(), reinterpret_cast<WGPUSupportedLimits * >(limits));
     return static_cast<Status>(result);
 }
 Queue Device::GetQueue() const {
-    auto result = wgpuDeviceGetQueue(Get());
+    auto result = wgpuDawnWireClientDeviceGetQueue(Get());
     return Queue::Acquire(result);
 }
 TextureUsage Device::GetSupportedSurfaceUsage(Surface const& surface) const {
-    auto result = wgpuDeviceGetSupportedSurfaceUsage(Get(), surface.Get());
+    auto result = wgpuDawnWireClientDeviceGetSupportedSurfaceUsage(Get(), surface.Get());
     return static_cast<TextureUsage>(result);
 }
 Bool Device::HasFeature(FeatureName feature) const {
-    auto result = wgpuDeviceHasFeature(Get(), static_cast<WGPUFeatureName>(feature));
+    auto result = wgpuDawnWireClientDeviceHasFeature(Get(), static_cast<WGPUFeatureName>(feature));
     return result;
 }
 SharedBufferMemory Device::ImportSharedBufferMemory(SharedBufferMemoryDescriptor const * descriptor) const {
-    auto result = wgpuDeviceImportSharedBufferMemory(Get(), reinterpret_cast<WGPUSharedBufferMemoryDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceImportSharedBufferMemory(Get(), reinterpret_cast<WGPUSharedBufferMemoryDescriptor const * >(descriptor));
     return SharedBufferMemory::Acquire(result);
 }
 SharedFence Device::ImportSharedFence(SharedFenceDescriptor const * descriptor) const {
-    auto result = wgpuDeviceImportSharedFence(Get(), reinterpret_cast<WGPUSharedFenceDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceImportSharedFence(Get(), reinterpret_cast<WGPUSharedFenceDescriptor const * >(descriptor));
     return SharedFence::Acquire(result);
 }
 SharedTextureMemory Device::ImportSharedTextureMemory(SharedTextureMemoryDescriptor const * descriptor) const {
-    auto result = wgpuDeviceImportSharedTextureMemory(Get(), reinterpret_cast<WGPUSharedTextureMemoryDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientDeviceImportSharedTextureMemory(Get(), reinterpret_cast<WGPUSharedTextureMemoryDescriptor const * >(descriptor));
     return SharedTextureMemory::Acquire(result);
 }
 void Device::InjectError(ErrorType type, char const * message) const {
-    wgpuDeviceInjectError(Get(), static_cast<WGPUErrorType>(type), reinterpret_cast<char const * >(message));
+    wgpuDawnWireClientDeviceInjectError(Get(), static_cast<WGPUErrorType>(type), reinterpret_cast<char const * >(message));
 }
 void Device::PopErrorScope(ErrorCallback oldCallback, void * userdata) const {
-    wgpuDevicePopErrorScope(Get(), oldCallback, userdata);
+    wgpuDawnWireClientDevicePopErrorScope(Get(), oldCallback, userdata);
 }
 template <typename F, typename T,
           typename Cb,
@@ -8032,7 +7999,7 @@ Future Device::PopErrorScope(CallbackMode callbackMode, F callback, T userdata) 
     };
     callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
     callbackInfo.userdata2 = reinterpret_cast<void*>(userdata);
-    auto result = wgpuDevicePopErrorScope2(Get(), callbackInfo);
+    auto result = wgpuDawnWireClientDevicePopErrorScope2(Get(), callbackInfo);
     return Future {
         result.id
     };
@@ -8052,7 +8019,7 @@ Future Device::PopErrorScope(CallbackMode callbackMode, L callback) const {
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuDevicePopErrorScope2(Get(), callbackInfo);
+        auto result = wgpuDawnWireClientDevicePopErrorScope2(Get(), callbackInfo);
         return Future {
             result.id
         };
@@ -8064,49 +8031,49 @@ Future Device::PopErrorScope(CallbackMode callbackMode, L callback) const {
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(lambda);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuDevicePopErrorScope2(Get(), callbackInfo);
+        auto result = wgpuDawnWireClientDevicePopErrorScope2(Get(), callbackInfo);
         return Future {
             result.id
         };
     }
 }
 Future Device::PopErrorScope(PopErrorScopeCallbackInfo callbackInfo) const {
-    auto result = wgpuDevicePopErrorScopeF(Get(), *reinterpret_cast<WGPUPopErrorScopeCallbackInfo const*>(&callbackInfo));
+    auto result = wgpuDawnWireClientDevicePopErrorScopeF(Get(), *reinterpret_cast<WGPUPopErrorScopeCallbackInfo const*>(&callbackInfo));
     return Future {
             result.id
         };
 }
 void Device::PushErrorScope(ErrorFilter filter) const {
-    wgpuDevicePushErrorScope(Get(), static_cast<WGPUErrorFilter>(filter));
+    wgpuDawnWireClientDevicePushErrorScope(Get(), static_cast<WGPUErrorFilter>(filter));
 }
 void Device::SetDeviceLostCallback(DeviceLostCallback callback, void * userdata) const {
-    wgpuDeviceSetDeviceLostCallback(Get(), callback, userdata);
+    wgpuDawnWireClientDeviceSetDeviceLostCallback(Get(), callback, userdata);
 }
 void Device::SetLabel(char const * label) const {
-    wgpuDeviceSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientDeviceSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 void Device::SetLoggingCallback(LoggingCallback callback, void * userdata) const {
-    wgpuDeviceSetLoggingCallback(Get(), callback, userdata);
+    wgpuDawnWireClientDeviceSetLoggingCallback(Get(), callback, userdata);
 }
 void Device::SetUncapturedErrorCallback(ErrorCallback callback, void * userdata) const {
-    wgpuDeviceSetUncapturedErrorCallback(Get(), callback, userdata);
+    wgpuDawnWireClientDeviceSetUncapturedErrorCallback(Get(), callback, userdata);
 }
 void Device::Tick() const {
-    wgpuDeviceTick(Get());
+    wgpuDawnWireClientDeviceTick(Get());
 }
 void Device::ValidateTextureDescriptor(TextureDescriptor const * descriptor) const {
-    wgpuDeviceValidateTextureDescriptor(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
+    wgpuDawnWireClientDeviceValidateTextureDescriptor(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
 }
 
 
 void Device::WGPUAddRef(WGPUDevice handle) {
     if (handle != nullptr) {
-        wgpuDeviceAddRef(handle);
+        wgpuDawnWireClientDeviceAddRef(handle);
     }
 }
 void Device::WGPURelease(WGPUDevice handle) {
     if (handle != nullptr) {
-        wgpuDeviceRelease(handle);
+        wgpuDawnWireClientDeviceRelease(handle);
     }
 }
 static_assert(sizeof(Device) == sizeof(WGPUDevice), "sizeof mismatch for Device");
@@ -8115,27 +8082,27 @@ static_assert(alignof(Device) == alignof(WGPUDevice), "alignof mismatch for Devi
 // ExternalTexture implementation
 
 void ExternalTexture::Destroy() const {
-    wgpuExternalTextureDestroy(Get());
+    wgpuDawnWireClientExternalTextureDestroy(Get());
 }
 void ExternalTexture::Expire() const {
-    wgpuExternalTextureExpire(Get());
+    wgpuDawnWireClientExternalTextureExpire(Get());
 }
 void ExternalTexture::Refresh() const {
-    wgpuExternalTextureRefresh(Get());
+    wgpuDawnWireClientExternalTextureRefresh(Get());
 }
 void ExternalTexture::SetLabel(char const * label) const {
-    wgpuExternalTextureSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientExternalTextureSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void ExternalTexture::WGPUAddRef(WGPUExternalTexture handle) {
     if (handle != nullptr) {
-        wgpuExternalTextureAddRef(handle);
+        wgpuDawnWireClientExternalTextureAddRef(handle);
     }
 }
 void ExternalTexture::WGPURelease(WGPUExternalTexture handle) {
     if (handle != nullptr) {
-        wgpuExternalTextureRelease(handle);
+        wgpuDawnWireClientExternalTextureRelease(handle);
     }
 }
 static_assert(sizeof(ExternalTexture) == sizeof(WGPUExternalTexture), "sizeof mismatch for ExternalTexture");
@@ -8144,22 +8111,22 @@ static_assert(alignof(ExternalTexture) == alignof(WGPUExternalTexture), "alignof
 // Instance implementation
 
 Surface Instance::CreateSurface(SurfaceDescriptor const * descriptor) const {
-    auto result = wgpuInstanceCreateSurface(Get(), reinterpret_cast<WGPUSurfaceDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientInstanceCreateSurface(Get(), reinterpret_cast<WGPUSurfaceDescriptor const * >(descriptor));
     return Surface::Acquire(result);
 }
 size_t Instance::EnumerateWGSLLanguageFeatures(WGSLFeatureName * features) const {
-    auto result = wgpuInstanceEnumerateWGSLLanguageFeatures(Get(), reinterpret_cast<WGPUWGSLFeatureName * >(features));
+    auto result = wgpuDawnWireClientInstanceEnumerateWGSLLanguageFeatures(Get(), reinterpret_cast<WGPUWGSLFeatureName * >(features));
     return result;
 }
 Bool Instance::HasWGSLLanguageFeature(WGSLFeatureName feature) const {
-    auto result = wgpuInstanceHasWGSLLanguageFeature(Get(), static_cast<WGPUWGSLFeatureName>(feature));
+    auto result = wgpuDawnWireClientInstanceHasWGSLLanguageFeature(Get(), static_cast<WGPUWGSLFeatureName>(feature));
     return result;
 }
 void Instance::ProcessEvents() const {
-    wgpuInstanceProcessEvents(Get());
+    wgpuDawnWireClientInstanceProcessEvents(Get());
 }
 void Instance::RequestAdapter(RequestAdapterOptions const * options, RequestAdapterCallback callback, void * userdata) const {
-    wgpuInstanceRequestAdapter(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callback, userdata);
+    wgpuDawnWireClientInstanceRequestAdapter(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callback, userdata);
 }
 template <typename F, typename T,
           typename Cb,
@@ -8173,7 +8140,7 @@ Future Instance::RequestAdapter(RequestAdapterOptions const * options, CallbackM
     };
     callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
     callbackInfo.userdata2 = reinterpret_cast<void*>(userdata);
-    auto result = wgpuInstanceRequestAdapter2(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callbackInfo);
+    auto result = wgpuDawnWireClientInstanceRequestAdapter2(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callbackInfo);
     return Future {
         result.id
     };
@@ -8193,7 +8160,7 @@ Future Instance::RequestAdapter(RequestAdapterOptions const * options, CallbackM
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuInstanceRequestAdapter2(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callbackInfo);
+        auto result = wgpuDawnWireClientInstanceRequestAdapter2(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callbackInfo);
         return Future {
             result.id
         };
@@ -8205,20 +8172,20 @@ Future Instance::RequestAdapter(RequestAdapterOptions const * options, CallbackM
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(lambda);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuInstanceRequestAdapter2(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callbackInfo);
+        auto result = wgpuDawnWireClientInstanceRequestAdapter2(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), callbackInfo);
         return Future {
             result.id
         };
     }
 }
 Future Instance::RequestAdapter(RequestAdapterOptions const * options, RequestAdapterCallbackInfo callbackInfo) const {
-    auto result = wgpuInstanceRequestAdapterF(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), *reinterpret_cast<WGPURequestAdapterCallbackInfo const*>(&callbackInfo));
+    auto result = wgpuDawnWireClientInstanceRequestAdapterF(Get(), reinterpret_cast<WGPURequestAdapterOptions const * >(options), *reinterpret_cast<WGPURequestAdapterCallbackInfo const*>(&callbackInfo));
     return Future {
             result.id
         };
 }
 WaitStatus Instance::WaitAny(size_t futureCount, FutureWaitInfo * futures, uint64_t timeoutNS) const {
-    auto result = wgpuInstanceWaitAny(Get(), futureCount, reinterpret_cast<WGPUFutureWaitInfo * >(futures), timeoutNS);
+    auto result = wgpuDawnWireClientInstanceWaitAny(Get(), futureCount, reinterpret_cast<WGPUFutureWaitInfo * >(futures), timeoutNS);
     return static_cast<WaitStatus>(result);
 }
 
@@ -8229,12 +8196,12 @@ WaitStatus Instance::WaitAny(Future f, uint64_t timeout) {
 
 void Instance::WGPUAddRef(WGPUInstance handle) {
     if (handle != nullptr) {
-        wgpuInstanceAddRef(handle);
+        wgpuDawnWireClientInstanceAddRef(handle);
     }
 }
 void Instance::WGPURelease(WGPUInstance handle) {
     if (handle != nullptr) {
-        wgpuInstanceRelease(handle);
+        wgpuDawnWireClientInstanceRelease(handle);
     }
 }
 static_assert(sizeof(Instance) == sizeof(WGPUInstance), "sizeof mismatch for Instance");
@@ -8243,18 +8210,18 @@ static_assert(alignof(Instance) == alignof(WGPUInstance), "alignof mismatch for 
 // PipelineLayout implementation
 
 void PipelineLayout::SetLabel(char const * label) const {
-    wgpuPipelineLayoutSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientPipelineLayoutSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void PipelineLayout::WGPUAddRef(WGPUPipelineLayout handle) {
     if (handle != nullptr) {
-        wgpuPipelineLayoutAddRef(handle);
+        wgpuDawnWireClientPipelineLayoutAddRef(handle);
     }
 }
 void PipelineLayout::WGPURelease(WGPUPipelineLayout handle) {
     if (handle != nullptr) {
-        wgpuPipelineLayoutRelease(handle);
+        wgpuDawnWireClientPipelineLayoutRelease(handle);
     }
 }
 static_assert(sizeof(PipelineLayout) == sizeof(WGPUPipelineLayout), "sizeof mismatch for PipelineLayout");
@@ -8263,29 +8230,29 @@ static_assert(alignof(PipelineLayout) == alignof(WGPUPipelineLayout), "alignof m
 // QuerySet implementation
 
 void QuerySet::Destroy() const {
-    wgpuQuerySetDestroy(Get());
+    wgpuDawnWireClientQuerySetDestroy(Get());
 }
 uint32_t QuerySet::GetCount() const {
-    auto result = wgpuQuerySetGetCount(Get());
+    auto result = wgpuDawnWireClientQuerySetGetCount(Get());
     return result;
 }
 QueryType QuerySet::GetType() const {
-    auto result = wgpuQuerySetGetType(Get());
+    auto result = wgpuDawnWireClientQuerySetGetType(Get());
     return static_cast<QueryType>(result);
 }
 void QuerySet::SetLabel(char const * label) const {
-    wgpuQuerySetSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientQuerySetSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void QuerySet::WGPUAddRef(WGPUQuerySet handle) {
     if (handle != nullptr) {
-        wgpuQuerySetAddRef(handle);
+        wgpuDawnWireClientQuerySetAddRef(handle);
     }
 }
 void QuerySet::WGPURelease(WGPUQuerySet handle) {
     if (handle != nullptr) {
-        wgpuQuerySetRelease(handle);
+        wgpuDawnWireClientQuerySetRelease(handle);
     }
 }
 static_assert(sizeof(QuerySet) == sizeof(WGPUQuerySet), "sizeof mismatch for QuerySet");
@@ -8294,13 +8261,13 @@ static_assert(alignof(QuerySet) == alignof(WGPUQuerySet), "alignof mismatch for 
 // Queue implementation
 
 void Queue::CopyExternalTextureForBrowser(ImageCopyExternalTexture const * source, ImageCopyTexture const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const {
-    wgpuQueueCopyExternalTextureForBrowser(Get(), reinterpret_cast<WGPUImageCopyExternalTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const * >(options));
+    wgpuDawnWireClientQueueCopyExternalTextureForBrowser(Get(), reinterpret_cast<WGPUImageCopyExternalTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const * >(options));
 }
 void Queue::CopyTextureForBrowser(ImageCopyTexture const * source, ImageCopyTexture const * destination, Extent3D const * copySize, CopyTextureForBrowserOptions const * options) const {
-    wgpuQueueCopyTextureForBrowser(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const * >(options));
+    wgpuDawnWireClientQueueCopyTextureForBrowser(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(source), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<WGPUExtent3D const * >(copySize), reinterpret_cast<WGPUCopyTextureForBrowserOptions const * >(options));
 }
 void Queue::OnSubmittedWorkDone(QueueWorkDoneCallback callback, void * userdata) const {
-    wgpuQueueOnSubmittedWorkDone(Get(), callback, userdata);
+    wgpuDawnWireClientQueueOnSubmittedWorkDone(Get(), callback, userdata);
 }
 template <typename F, typename T,
           typename Cb,
@@ -8314,7 +8281,7 @@ Future Queue::OnSubmittedWorkDone(CallbackMode callbackMode, F callback, T userd
     };
     callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
     callbackInfo.userdata2 = reinterpret_cast<void*>(userdata);
-    auto result = wgpuQueueOnSubmittedWorkDone2(Get(), callbackInfo);
+    auto result = wgpuDawnWireClientQueueOnSubmittedWorkDone2(Get(), callbackInfo);
     return Future {
         result.id
     };
@@ -8334,7 +8301,7 @@ Future Queue::OnSubmittedWorkDone(CallbackMode callbackMode, L callback) const {
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuQueueOnSubmittedWorkDone2(Get(), callbackInfo);
+        auto result = wgpuDawnWireClientQueueOnSubmittedWorkDone2(Get(), callbackInfo);
         return Future {
             result.id
         };
@@ -8346,40 +8313,40 @@ Future Queue::OnSubmittedWorkDone(CallbackMode callbackMode, L callback) const {
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(lambda);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuQueueOnSubmittedWorkDone2(Get(), callbackInfo);
+        auto result = wgpuDawnWireClientQueueOnSubmittedWorkDone2(Get(), callbackInfo);
         return Future {
             result.id
         };
     }
 }
 Future Queue::OnSubmittedWorkDone(QueueWorkDoneCallbackInfo callbackInfo) const {
-    auto result = wgpuQueueOnSubmittedWorkDoneF(Get(), *reinterpret_cast<WGPUQueueWorkDoneCallbackInfo const*>(&callbackInfo));
+    auto result = wgpuDawnWireClientQueueOnSubmittedWorkDoneF(Get(), *reinterpret_cast<WGPUQueueWorkDoneCallbackInfo const*>(&callbackInfo));
     return Future {
             result.id
         };
 }
 void Queue::SetLabel(char const * label) const {
-    wgpuQueueSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientQueueSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 void Queue::Submit(size_t commandCount, CommandBuffer const * commands) const {
-    wgpuQueueSubmit(Get(), commandCount, reinterpret_cast<WGPUCommandBuffer const * >(commands));
+    wgpuDawnWireClientQueueSubmit(Get(), commandCount, reinterpret_cast<WGPUCommandBuffer const * >(commands));
 }
 void Queue::WriteBuffer(Buffer const& buffer, uint64_t bufferOffset, void const * data, size_t size) const {
-    wgpuQueueWriteBuffer(Get(), buffer.Get(), bufferOffset, reinterpret_cast<void const * >(data), size);
+    wgpuDawnWireClientQueueWriteBuffer(Get(), buffer.Get(), bufferOffset, reinterpret_cast<void const * >(data), size);
 }
 void Queue::WriteTexture(ImageCopyTexture const * destination, void const * data, size_t dataSize, TextureDataLayout const * dataLayout, Extent3D const * writeSize) const {
-    wgpuQueueWriteTexture(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<void const * >(data), dataSize, reinterpret_cast<WGPUTextureDataLayout const * >(dataLayout), reinterpret_cast<WGPUExtent3D const * >(writeSize));
+    wgpuDawnWireClientQueueWriteTexture(Get(), reinterpret_cast<WGPUImageCopyTexture const * >(destination), reinterpret_cast<void const * >(data), dataSize, reinterpret_cast<WGPUTextureDataLayout const * >(dataLayout), reinterpret_cast<WGPUExtent3D const * >(writeSize));
 }
 
 
 void Queue::WGPUAddRef(WGPUQueue handle) {
     if (handle != nullptr) {
-        wgpuQueueAddRef(handle);
+        wgpuDawnWireClientQueueAddRef(handle);
     }
 }
 void Queue::WGPURelease(WGPUQueue handle) {
     if (handle != nullptr) {
-        wgpuQueueRelease(handle);
+        wgpuDawnWireClientQueueRelease(handle);
     }
 }
 static_assert(sizeof(Queue) == sizeof(WGPUQueue), "sizeof mismatch for Queue");
@@ -8388,18 +8355,18 @@ static_assert(alignof(Queue) == alignof(WGPUQueue), "alignof mismatch for Queue"
 // RenderBundle implementation
 
 void RenderBundle::SetLabel(char const * label) const {
-    wgpuRenderBundleSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientRenderBundleSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void RenderBundle::WGPUAddRef(WGPURenderBundle handle) {
     if (handle != nullptr) {
-        wgpuRenderBundleAddRef(handle);
+        wgpuDawnWireClientRenderBundleAddRef(handle);
     }
 }
 void RenderBundle::WGPURelease(WGPURenderBundle handle) {
     if (handle != nullptr) {
-        wgpuRenderBundleRelease(handle);
+        wgpuDawnWireClientRenderBundleRelease(handle);
     }
 }
 static_assert(sizeof(RenderBundle) == sizeof(WGPURenderBundle), "sizeof mismatch for RenderBundle");
@@ -8408,55 +8375,55 @@ static_assert(alignof(RenderBundle) == alignof(WGPURenderBundle), "alignof misma
 // RenderBundleEncoder implementation
 
 void RenderBundleEncoder::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const {
-    wgpuRenderBundleEncoderDraw(Get(), vertexCount, instanceCount, firstVertex, firstInstance);
+    wgpuDawnWireClientRenderBundleEncoderDraw(Get(), vertexCount, instanceCount, firstVertex, firstInstance);
 }
 void RenderBundleEncoder::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) const {
-    wgpuRenderBundleEncoderDrawIndexed(Get(), indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
+    wgpuDawnWireClientRenderBundleEncoderDrawIndexed(Get(), indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
 }
 void RenderBundleEncoder::DrawIndexedIndirect(Buffer const& indirectBuffer, uint64_t indirectOffset) const {
-    wgpuRenderBundleEncoderDrawIndexedIndirect(Get(), indirectBuffer.Get(), indirectOffset);
+    wgpuDawnWireClientRenderBundleEncoderDrawIndexedIndirect(Get(), indirectBuffer.Get(), indirectOffset);
 }
 void RenderBundleEncoder::DrawIndirect(Buffer const& indirectBuffer, uint64_t indirectOffset) const {
-    wgpuRenderBundleEncoderDrawIndirect(Get(), indirectBuffer.Get(), indirectOffset);
+    wgpuDawnWireClientRenderBundleEncoderDrawIndirect(Get(), indirectBuffer.Get(), indirectOffset);
 }
 RenderBundle RenderBundleEncoder::Finish(RenderBundleDescriptor const * descriptor) const {
-    auto result = wgpuRenderBundleEncoderFinish(Get(), reinterpret_cast<WGPURenderBundleDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientRenderBundleEncoderFinish(Get(), reinterpret_cast<WGPURenderBundleDescriptor const * >(descriptor));
     return RenderBundle::Acquire(result);
 }
 void RenderBundleEncoder::InsertDebugMarker(char const * markerLabel) const {
-    wgpuRenderBundleEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
+    wgpuDawnWireClientRenderBundleEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
 }
 void RenderBundleEncoder::PopDebugGroup() const {
-    wgpuRenderBundleEncoderPopDebugGroup(Get());
+    wgpuDawnWireClientRenderBundleEncoderPopDebugGroup(Get());
 }
 void RenderBundleEncoder::PushDebugGroup(char const * groupLabel) const {
-    wgpuRenderBundleEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
+    wgpuDawnWireClientRenderBundleEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
 }
 void RenderBundleEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
-    wgpuRenderBundleEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
+    wgpuDawnWireClientRenderBundleEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
 }
 void RenderBundleEncoder::SetIndexBuffer(Buffer const& buffer, IndexFormat format, uint64_t offset, uint64_t size) const {
-    wgpuRenderBundleEncoderSetIndexBuffer(Get(), buffer.Get(), static_cast<WGPUIndexFormat>(format), offset, size);
+    wgpuDawnWireClientRenderBundleEncoderSetIndexBuffer(Get(), buffer.Get(), static_cast<WGPUIndexFormat>(format), offset, size);
 }
 void RenderBundleEncoder::SetLabel(char const * label) const {
-    wgpuRenderBundleEncoderSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientRenderBundleEncoderSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 void RenderBundleEncoder::SetPipeline(RenderPipeline const& pipeline) const {
-    wgpuRenderBundleEncoderSetPipeline(Get(), pipeline.Get());
+    wgpuDawnWireClientRenderBundleEncoderSetPipeline(Get(), pipeline.Get());
 }
 void RenderBundleEncoder::SetVertexBuffer(uint32_t slot, Buffer const& buffer, uint64_t offset, uint64_t size) const {
-    wgpuRenderBundleEncoderSetVertexBuffer(Get(), slot, buffer.Get(), offset, size);
+    wgpuDawnWireClientRenderBundleEncoderSetVertexBuffer(Get(), slot, buffer.Get(), offset, size);
 }
 
 
 void RenderBundleEncoder::WGPUAddRef(WGPURenderBundleEncoder handle) {
     if (handle != nullptr) {
-        wgpuRenderBundleEncoderAddRef(handle);
+        wgpuDawnWireClientRenderBundleEncoderAddRef(handle);
     }
 }
 void RenderBundleEncoder::WGPURelease(WGPURenderBundleEncoder handle) {
     if (handle != nullptr) {
-        wgpuRenderBundleEncoderRelease(handle);
+        wgpuDawnWireClientRenderBundleEncoderRelease(handle);
     }
 }
 static_assert(sizeof(RenderBundleEncoder) == sizeof(WGPURenderBundleEncoder), "sizeof mismatch for RenderBundleEncoder");
@@ -8465,81 +8432,81 @@ static_assert(alignof(RenderBundleEncoder) == alignof(WGPURenderBundleEncoder), 
 // RenderPassEncoder implementation
 
 void RenderPassEncoder::BeginOcclusionQuery(uint32_t queryIndex) const {
-    wgpuRenderPassEncoderBeginOcclusionQuery(Get(), queryIndex);
+    wgpuDawnWireClientRenderPassEncoderBeginOcclusionQuery(Get(), queryIndex);
 }
 void RenderPassEncoder::Draw(uint32_t vertexCount, uint32_t instanceCount, uint32_t firstVertex, uint32_t firstInstance) const {
-    wgpuRenderPassEncoderDraw(Get(), vertexCount, instanceCount, firstVertex, firstInstance);
+    wgpuDawnWireClientRenderPassEncoderDraw(Get(), vertexCount, instanceCount, firstVertex, firstInstance);
 }
 void RenderPassEncoder::DrawIndexed(uint32_t indexCount, uint32_t instanceCount, uint32_t firstIndex, int32_t baseVertex, uint32_t firstInstance) const {
-    wgpuRenderPassEncoderDrawIndexed(Get(), indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
+    wgpuDawnWireClientRenderPassEncoderDrawIndexed(Get(), indexCount, instanceCount, firstIndex, baseVertex, firstInstance);
 }
 void RenderPassEncoder::DrawIndexedIndirect(Buffer const& indirectBuffer, uint64_t indirectOffset) const {
-    wgpuRenderPassEncoderDrawIndexedIndirect(Get(), indirectBuffer.Get(), indirectOffset);
+    wgpuDawnWireClientRenderPassEncoderDrawIndexedIndirect(Get(), indirectBuffer.Get(), indirectOffset);
 }
 void RenderPassEncoder::DrawIndirect(Buffer const& indirectBuffer, uint64_t indirectOffset) const {
-    wgpuRenderPassEncoderDrawIndirect(Get(), indirectBuffer.Get(), indirectOffset);
+    wgpuDawnWireClientRenderPassEncoderDrawIndirect(Get(), indirectBuffer.Get(), indirectOffset);
 }
 void RenderPassEncoder::End() const {
-    wgpuRenderPassEncoderEnd(Get());
+    wgpuDawnWireClientRenderPassEncoderEnd(Get());
 }
 void RenderPassEncoder::EndOcclusionQuery() const {
-    wgpuRenderPassEncoderEndOcclusionQuery(Get());
+    wgpuDawnWireClientRenderPassEncoderEndOcclusionQuery(Get());
 }
 void RenderPassEncoder::ExecuteBundles(size_t bundleCount, RenderBundle const * bundles) const {
-    wgpuRenderPassEncoderExecuteBundles(Get(), bundleCount, reinterpret_cast<WGPURenderBundle const * >(bundles));
+    wgpuDawnWireClientRenderPassEncoderExecuteBundles(Get(), bundleCount, reinterpret_cast<WGPURenderBundle const * >(bundles));
 }
 void RenderPassEncoder::InsertDebugMarker(char const * markerLabel) const {
-    wgpuRenderPassEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
+    wgpuDawnWireClientRenderPassEncoderInsertDebugMarker(Get(), reinterpret_cast<char const * >(markerLabel));
 }
 void RenderPassEncoder::PixelLocalStorageBarrier() const {
-    wgpuRenderPassEncoderPixelLocalStorageBarrier(Get());
+    wgpuDawnWireClientRenderPassEncoderPixelLocalStorageBarrier(Get());
 }
 void RenderPassEncoder::PopDebugGroup() const {
-    wgpuRenderPassEncoderPopDebugGroup(Get());
+    wgpuDawnWireClientRenderPassEncoderPopDebugGroup(Get());
 }
 void RenderPassEncoder::PushDebugGroup(char const * groupLabel) const {
-    wgpuRenderPassEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
+    wgpuDawnWireClientRenderPassEncoderPushDebugGroup(Get(), reinterpret_cast<char const * >(groupLabel));
 }
 void RenderPassEncoder::SetBindGroup(uint32_t groupIndex, BindGroup const& group, size_t dynamicOffsetCount, uint32_t const * dynamicOffsets) const {
-    wgpuRenderPassEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
+    wgpuDawnWireClientRenderPassEncoderSetBindGroup(Get(), groupIndex, group.Get(), dynamicOffsetCount, reinterpret_cast<uint32_t const * >(dynamicOffsets));
 }
 void RenderPassEncoder::SetBlendConstant(Color const * color) const {
-    wgpuRenderPassEncoderSetBlendConstant(Get(), reinterpret_cast<WGPUColor const * >(color));
+    wgpuDawnWireClientRenderPassEncoderSetBlendConstant(Get(), reinterpret_cast<WGPUColor const * >(color));
 }
 void RenderPassEncoder::SetIndexBuffer(Buffer const& buffer, IndexFormat format, uint64_t offset, uint64_t size) const {
-    wgpuRenderPassEncoderSetIndexBuffer(Get(), buffer.Get(), static_cast<WGPUIndexFormat>(format), offset, size);
+    wgpuDawnWireClientRenderPassEncoderSetIndexBuffer(Get(), buffer.Get(), static_cast<WGPUIndexFormat>(format), offset, size);
 }
 void RenderPassEncoder::SetLabel(char const * label) const {
-    wgpuRenderPassEncoderSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientRenderPassEncoderSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 void RenderPassEncoder::SetPipeline(RenderPipeline const& pipeline) const {
-    wgpuRenderPassEncoderSetPipeline(Get(), pipeline.Get());
+    wgpuDawnWireClientRenderPassEncoderSetPipeline(Get(), pipeline.Get());
 }
 void RenderPassEncoder::SetScissorRect(uint32_t x, uint32_t y, uint32_t width, uint32_t height) const {
-    wgpuRenderPassEncoderSetScissorRect(Get(), x, y, width, height);
+    wgpuDawnWireClientRenderPassEncoderSetScissorRect(Get(), x, y, width, height);
 }
 void RenderPassEncoder::SetStencilReference(uint32_t reference) const {
-    wgpuRenderPassEncoderSetStencilReference(Get(), reference);
+    wgpuDawnWireClientRenderPassEncoderSetStencilReference(Get(), reference);
 }
 void RenderPassEncoder::SetVertexBuffer(uint32_t slot, Buffer const& buffer, uint64_t offset, uint64_t size) const {
-    wgpuRenderPassEncoderSetVertexBuffer(Get(), slot, buffer.Get(), offset, size);
+    wgpuDawnWireClientRenderPassEncoderSetVertexBuffer(Get(), slot, buffer.Get(), offset, size);
 }
 void RenderPassEncoder::SetViewport(float x, float y, float width, float height, float minDepth, float maxDepth) const {
-    wgpuRenderPassEncoderSetViewport(Get(), x, y, width, height, minDepth, maxDepth);
+    wgpuDawnWireClientRenderPassEncoderSetViewport(Get(), x, y, width, height, minDepth, maxDepth);
 }
 void RenderPassEncoder::WriteTimestamp(QuerySet const& querySet, uint32_t queryIndex) const {
-    wgpuRenderPassEncoderWriteTimestamp(Get(), querySet.Get(), queryIndex);
+    wgpuDawnWireClientRenderPassEncoderWriteTimestamp(Get(), querySet.Get(), queryIndex);
 }
 
 
 void RenderPassEncoder::WGPUAddRef(WGPURenderPassEncoder handle) {
     if (handle != nullptr) {
-        wgpuRenderPassEncoderAddRef(handle);
+        wgpuDawnWireClientRenderPassEncoderAddRef(handle);
     }
 }
 void RenderPassEncoder::WGPURelease(WGPURenderPassEncoder handle) {
     if (handle != nullptr) {
-        wgpuRenderPassEncoderRelease(handle);
+        wgpuDawnWireClientRenderPassEncoderRelease(handle);
     }
 }
 static_assert(sizeof(RenderPassEncoder) == sizeof(WGPURenderPassEncoder), "sizeof mismatch for RenderPassEncoder");
@@ -8548,22 +8515,22 @@ static_assert(alignof(RenderPassEncoder) == alignof(WGPURenderPassEncoder), "ali
 // RenderPipeline implementation
 
 BindGroupLayout RenderPipeline::GetBindGroupLayout(uint32_t groupIndex) const {
-    auto result = wgpuRenderPipelineGetBindGroupLayout(Get(), groupIndex);
+    auto result = wgpuDawnWireClientRenderPipelineGetBindGroupLayout(Get(), groupIndex);
     return BindGroupLayout::Acquire(result);
 }
 void RenderPipeline::SetLabel(char const * label) const {
-    wgpuRenderPipelineSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientRenderPipelineSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void RenderPipeline::WGPUAddRef(WGPURenderPipeline handle) {
     if (handle != nullptr) {
-        wgpuRenderPipelineAddRef(handle);
+        wgpuDawnWireClientRenderPipelineAddRef(handle);
     }
 }
 void RenderPipeline::WGPURelease(WGPURenderPipeline handle) {
     if (handle != nullptr) {
-        wgpuRenderPipelineRelease(handle);
+        wgpuDawnWireClientRenderPipelineRelease(handle);
     }
 }
 static_assert(sizeof(RenderPipeline) == sizeof(WGPURenderPipeline), "sizeof mismatch for RenderPipeline");
@@ -8572,18 +8539,18 @@ static_assert(alignof(RenderPipeline) == alignof(WGPURenderPipeline), "alignof m
 // Sampler implementation
 
 void Sampler::SetLabel(char const * label) const {
-    wgpuSamplerSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientSamplerSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void Sampler::WGPUAddRef(WGPUSampler handle) {
     if (handle != nullptr) {
-        wgpuSamplerAddRef(handle);
+        wgpuDawnWireClientSamplerAddRef(handle);
     }
 }
 void Sampler::WGPURelease(WGPUSampler handle) {
     if (handle != nullptr) {
-        wgpuSamplerRelease(handle);
+        wgpuDawnWireClientSamplerRelease(handle);
     }
 }
 static_assert(sizeof(Sampler) == sizeof(WGPUSampler), "sizeof mismatch for Sampler");
@@ -8592,7 +8559,7 @@ static_assert(alignof(Sampler) == alignof(WGPUSampler), "alignof mismatch for Sa
 // ShaderModule implementation
 
 void ShaderModule::GetCompilationInfo(CompilationInfoCallback callback, void * userdata) const {
-    wgpuShaderModuleGetCompilationInfo(Get(), callback, userdata);
+    wgpuDawnWireClientShaderModuleGetCompilationInfo(Get(), callback, userdata);
 }
 template <typename F, typename T,
           typename Cb,
@@ -8606,7 +8573,7 @@ Future ShaderModule::GetCompilationInfo(CallbackMode callbackMode, F callback, T
     };
     callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
     callbackInfo.userdata2 = reinterpret_cast<void*>(userdata);
-    auto result = wgpuShaderModuleGetCompilationInfo2(Get(), callbackInfo);
+    auto result = wgpuDawnWireClientShaderModuleGetCompilationInfo2(Get(), callbackInfo);
     return Future {
         result.id
     };
@@ -8626,7 +8593,7 @@ Future ShaderModule::GetCompilationInfo(CallbackMode callbackMode, L callback) c
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(+callback);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuShaderModuleGetCompilationInfo2(Get(), callbackInfo);
+        auto result = wgpuDawnWireClientShaderModuleGetCompilationInfo2(Get(), callbackInfo);
         return Future {
             result.id
         };
@@ -8638,31 +8605,31 @@ Future ShaderModule::GetCompilationInfo(CallbackMode callbackMode, L callback) c
         };
         callbackInfo.userdata1 = reinterpret_cast<void*>(lambda);
         callbackInfo.userdata2 = nullptr;
-        auto result = wgpuShaderModuleGetCompilationInfo2(Get(), callbackInfo);
+        auto result = wgpuDawnWireClientShaderModuleGetCompilationInfo2(Get(), callbackInfo);
         return Future {
             result.id
         };
     }
 }
 Future ShaderModule::GetCompilationInfo(CompilationInfoCallbackInfo callbackInfo) const {
-    auto result = wgpuShaderModuleGetCompilationInfoF(Get(), *reinterpret_cast<WGPUCompilationInfoCallbackInfo const*>(&callbackInfo));
+    auto result = wgpuDawnWireClientShaderModuleGetCompilationInfoF(Get(), *reinterpret_cast<WGPUCompilationInfoCallbackInfo const*>(&callbackInfo));
     return Future {
             result.id
         };
 }
 void ShaderModule::SetLabel(char const * label) const {
-    wgpuShaderModuleSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientShaderModuleSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void ShaderModule::WGPUAddRef(WGPUShaderModule handle) {
     if (handle != nullptr) {
-        wgpuShaderModuleAddRef(handle);
+        wgpuDawnWireClientShaderModuleAddRef(handle);
     }
 }
 void ShaderModule::WGPURelease(WGPUShaderModule handle) {
     if (handle != nullptr) {
-        wgpuShaderModuleRelease(handle);
+        wgpuDawnWireClientShaderModuleRelease(handle);
     }
 }
 static_assert(sizeof(ShaderModule) == sizeof(WGPUShaderModule), "sizeof mismatch for ShaderModule");
@@ -8671,39 +8638,39 @@ static_assert(alignof(ShaderModule) == alignof(WGPUShaderModule), "alignof misma
 // SharedBufferMemory implementation
 
 ConvertibleStatus SharedBufferMemory::BeginAccess(Buffer const& buffer, SharedBufferMemoryBeginAccessDescriptor const * descriptor) const {
-    auto result = wgpuSharedBufferMemoryBeginAccess(Get(), buffer.Get(), reinterpret_cast<WGPUSharedBufferMemoryBeginAccessDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientSharedBufferMemoryBeginAccess(Get(), buffer.Get(), reinterpret_cast<WGPUSharedBufferMemoryBeginAccessDescriptor const * >(descriptor));
     return static_cast<Status>(result);
 }
 Buffer SharedBufferMemory::CreateBuffer(BufferDescriptor const * descriptor) const {
-    auto result = wgpuSharedBufferMemoryCreateBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientSharedBufferMemoryCreateBuffer(Get(), reinterpret_cast<WGPUBufferDescriptor const * >(descriptor));
     return Buffer::Acquire(result);
 }
 ConvertibleStatus SharedBufferMemory::EndAccess(Buffer const& buffer, SharedBufferMemoryEndAccessState * descriptor) const {
     *descriptor = SharedBufferMemoryEndAccessState();
-    auto result = wgpuSharedBufferMemoryEndAccess(Get(), buffer.Get(), reinterpret_cast<WGPUSharedBufferMemoryEndAccessState * >(descriptor));
+    auto result = wgpuDawnWireClientSharedBufferMemoryEndAccess(Get(), buffer.Get(), reinterpret_cast<WGPUSharedBufferMemoryEndAccessState * >(descriptor));
     return static_cast<Status>(result);
 }
 ConvertibleStatus SharedBufferMemory::GetProperties(SharedBufferMemoryProperties * properties) const {
-    auto result = wgpuSharedBufferMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedBufferMemoryProperties * >(properties));
+    auto result = wgpuDawnWireClientSharedBufferMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedBufferMemoryProperties * >(properties));
     return static_cast<Status>(result);
 }
 Bool SharedBufferMemory::IsDeviceLost() const {
-    auto result = wgpuSharedBufferMemoryIsDeviceLost(Get());
+    auto result = wgpuDawnWireClientSharedBufferMemoryIsDeviceLost(Get());
     return result;
 }
 void SharedBufferMemory::SetLabel(char const * label) const {
-    wgpuSharedBufferMemorySetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientSharedBufferMemorySetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void SharedBufferMemory::WGPUAddRef(WGPUSharedBufferMemory handle) {
     if (handle != nullptr) {
-        wgpuSharedBufferMemoryAddRef(handle);
+        wgpuDawnWireClientSharedBufferMemoryAddRef(handle);
     }
 }
 void SharedBufferMemory::WGPURelease(WGPUSharedBufferMemory handle) {
     if (handle != nullptr) {
-        wgpuSharedBufferMemoryRelease(handle);
+        wgpuDawnWireClientSharedBufferMemoryRelease(handle);
     }
 }
 static_assert(sizeof(SharedBufferMemory) == sizeof(WGPUSharedBufferMemory), "sizeof mismatch for SharedBufferMemory");
@@ -8712,18 +8679,18 @@ static_assert(alignof(SharedBufferMemory) == alignof(WGPUSharedBufferMemory), "a
 // SharedFence implementation
 
 void SharedFence::ExportInfo(SharedFenceExportInfo * info) const {
-    wgpuSharedFenceExportInfo(Get(), reinterpret_cast<WGPUSharedFenceExportInfo * >(info));
+    wgpuDawnWireClientSharedFenceExportInfo(Get(), reinterpret_cast<WGPUSharedFenceExportInfo * >(info));
 }
 
 
 void SharedFence::WGPUAddRef(WGPUSharedFence handle) {
     if (handle != nullptr) {
-        wgpuSharedFenceAddRef(handle);
+        wgpuDawnWireClientSharedFenceAddRef(handle);
     }
 }
 void SharedFence::WGPURelease(WGPUSharedFence handle) {
     if (handle != nullptr) {
-        wgpuSharedFenceRelease(handle);
+        wgpuDawnWireClientSharedFenceRelease(handle);
     }
 }
 static_assert(sizeof(SharedFence) == sizeof(WGPUSharedFence), "sizeof mismatch for SharedFence");
@@ -8732,39 +8699,39 @@ static_assert(alignof(SharedFence) == alignof(WGPUSharedFence), "alignof mismatc
 // SharedTextureMemory implementation
 
 ConvertibleStatus SharedTextureMemory::BeginAccess(Texture const& texture, SharedTextureMemoryBeginAccessDescriptor const * descriptor) const {
-    auto result = wgpuSharedTextureMemoryBeginAccess(Get(), texture.Get(), reinterpret_cast<WGPUSharedTextureMemoryBeginAccessDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientSharedTextureMemoryBeginAccess(Get(), texture.Get(), reinterpret_cast<WGPUSharedTextureMemoryBeginAccessDescriptor const * >(descriptor));
     return static_cast<Status>(result);
 }
 Texture SharedTextureMemory::CreateTexture(TextureDescriptor const * descriptor) const {
-    auto result = wgpuSharedTextureMemoryCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientSharedTextureMemoryCreateTexture(Get(), reinterpret_cast<WGPUTextureDescriptor const * >(descriptor));
     return Texture::Acquire(result);
 }
 ConvertibleStatus SharedTextureMemory::EndAccess(Texture const& texture, SharedTextureMemoryEndAccessState * descriptor) const {
     *descriptor = SharedTextureMemoryEndAccessState();
-    auto result = wgpuSharedTextureMemoryEndAccess(Get(), texture.Get(), reinterpret_cast<WGPUSharedTextureMemoryEndAccessState * >(descriptor));
+    auto result = wgpuDawnWireClientSharedTextureMemoryEndAccess(Get(), texture.Get(), reinterpret_cast<WGPUSharedTextureMemoryEndAccessState * >(descriptor));
     return static_cast<Status>(result);
 }
 ConvertibleStatus SharedTextureMemory::GetProperties(SharedTextureMemoryProperties * properties) const {
-    auto result = wgpuSharedTextureMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedTextureMemoryProperties * >(properties));
+    auto result = wgpuDawnWireClientSharedTextureMemoryGetProperties(Get(), reinterpret_cast<WGPUSharedTextureMemoryProperties * >(properties));
     return static_cast<Status>(result);
 }
 Bool SharedTextureMemory::IsDeviceLost() const {
-    auto result = wgpuSharedTextureMemoryIsDeviceLost(Get());
+    auto result = wgpuDawnWireClientSharedTextureMemoryIsDeviceLost(Get());
     return result;
 }
 void SharedTextureMemory::SetLabel(char const * label) const {
-    wgpuSharedTextureMemorySetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientSharedTextureMemorySetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void SharedTextureMemory::WGPUAddRef(WGPUSharedTextureMemory handle) {
     if (handle != nullptr) {
-        wgpuSharedTextureMemoryAddRef(handle);
+        wgpuDawnWireClientSharedTextureMemoryAddRef(handle);
     }
 }
 void SharedTextureMemory::WGPURelease(WGPUSharedTextureMemory handle) {
     if (handle != nullptr) {
-        wgpuSharedTextureMemoryRelease(handle);
+        wgpuDawnWireClientSharedTextureMemoryRelease(handle);
     }
 }
 static_assert(sizeof(SharedTextureMemory) == sizeof(WGPUSharedTextureMemory), "sizeof mismatch for SharedTextureMemory");
@@ -8773,36 +8740,36 @@ static_assert(alignof(SharedTextureMemory) == alignof(WGPUSharedTextureMemory), 
 // Surface implementation
 
 void Surface::Configure(SurfaceConfiguration const * config) const {
-    wgpuSurfaceConfigure(Get(), reinterpret_cast<WGPUSurfaceConfiguration const * >(config));
+    wgpuDawnWireClientSurfaceConfigure(Get(), reinterpret_cast<WGPUSurfaceConfiguration const * >(config));
 }
 ConvertibleStatus Surface::GetCapabilities(Adapter const& adapter, SurfaceCapabilities * capabilities) const {
     *capabilities = SurfaceCapabilities();
-    auto result = wgpuSurfaceGetCapabilities(Get(), adapter.Get(), reinterpret_cast<WGPUSurfaceCapabilities * >(capabilities));
+    auto result = wgpuDawnWireClientSurfaceGetCapabilities(Get(), adapter.Get(), reinterpret_cast<WGPUSurfaceCapabilities * >(capabilities));
     return static_cast<Status>(result);
 }
 void Surface::GetCurrentTexture(SurfaceTexture * surfaceTexture) const {
-    wgpuSurfaceGetCurrentTexture(Get(), reinterpret_cast<WGPUSurfaceTexture * >(surfaceTexture));
+    wgpuDawnWireClientSurfaceGetCurrentTexture(Get(), reinterpret_cast<WGPUSurfaceTexture * >(surfaceTexture));
 }
 TextureFormat Surface::GetPreferredFormat(Adapter const& adapter) const {
-    auto result = wgpuSurfaceGetPreferredFormat(Get(), adapter.Get());
+    auto result = wgpuDawnWireClientSurfaceGetPreferredFormat(Get(), adapter.Get());
     return static_cast<TextureFormat>(result);
 }
 void Surface::Present() const {
-    wgpuSurfacePresent(Get());
+    wgpuDawnWireClientSurfacePresent(Get());
 }
 void Surface::Unconfigure() const {
-    wgpuSurfaceUnconfigure(Get());
+    wgpuDawnWireClientSurfaceUnconfigure(Get());
 }
 
 
 void Surface::WGPUAddRef(WGPUSurface handle) {
     if (handle != nullptr) {
-        wgpuSurfaceAddRef(handle);
+        wgpuDawnWireClientSurfaceAddRef(handle);
     }
 }
 void Surface::WGPURelease(WGPUSurface handle) {
     if (handle != nullptr) {
-        wgpuSurfaceRelease(handle);
+        wgpuDawnWireClientSurfaceRelease(handle);
     }
 }
 static_assert(sizeof(Surface) == sizeof(WGPUSurface), "sizeof mismatch for Surface");
@@ -8811,26 +8778,26 @@ static_assert(alignof(Surface) == alignof(WGPUSurface), "alignof mismatch for Su
 // SwapChain implementation
 
 Texture SwapChain::GetCurrentTexture() const {
-    auto result = wgpuSwapChainGetCurrentTexture(Get());
+    auto result = wgpuDawnWireClientSwapChainGetCurrentTexture(Get());
     return Texture::Acquire(result);
 }
 TextureView SwapChain::GetCurrentTextureView() const {
-    auto result = wgpuSwapChainGetCurrentTextureView(Get());
+    auto result = wgpuDawnWireClientSwapChainGetCurrentTextureView(Get());
     return TextureView::Acquire(result);
 }
 void SwapChain::Present() const {
-    wgpuSwapChainPresent(Get());
+    wgpuDawnWireClientSwapChainPresent(Get());
 }
 
 
 void SwapChain::WGPUAddRef(WGPUSwapChain handle) {
     if (handle != nullptr) {
-        wgpuSwapChainAddRef(handle);
+        wgpuDawnWireClientSwapChainAddRef(handle);
     }
 }
 void SwapChain::WGPURelease(WGPUSwapChain handle) {
     if (handle != nullptr) {
-        wgpuSwapChainRelease(handle);
+        wgpuDawnWireClientSwapChainRelease(handle);
     }
 }
 static_assert(sizeof(SwapChain) == sizeof(WGPUSwapChain), "sizeof mismatch for SwapChain");
@@ -8839,61 +8806,61 @@ static_assert(alignof(SwapChain) == alignof(WGPUSwapChain), "alignof mismatch fo
 // Texture implementation
 
 TextureView Texture::CreateErrorView(TextureViewDescriptor const * descriptor) const {
-    auto result = wgpuTextureCreateErrorView(Get(), reinterpret_cast<WGPUTextureViewDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientTextureCreateErrorView(Get(), reinterpret_cast<WGPUTextureViewDescriptor const * >(descriptor));
     return TextureView::Acquire(result);
 }
 TextureView Texture::CreateView(TextureViewDescriptor const * descriptor) const {
-    auto result = wgpuTextureCreateView(Get(), reinterpret_cast<WGPUTextureViewDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientTextureCreateView(Get(), reinterpret_cast<WGPUTextureViewDescriptor const * >(descriptor));
     return TextureView::Acquire(result);
 }
 void Texture::Destroy() const {
-    wgpuTextureDestroy(Get());
+    wgpuDawnWireClientTextureDestroy(Get());
 }
 uint32_t Texture::GetDepthOrArrayLayers() const {
-    auto result = wgpuTextureGetDepthOrArrayLayers(Get());
+    auto result = wgpuDawnWireClientTextureGetDepthOrArrayLayers(Get());
     return result;
 }
 TextureDimension Texture::GetDimension() const {
-    auto result = wgpuTextureGetDimension(Get());
+    auto result = wgpuDawnWireClientTextureGetDimension(Get());
     return static_cast<TextureDimension>(result);
 }
 TextureFormat Texture::GetFormat() const {
-    auto result = wgpuTextureGetFormat(Get());
+    auto result = wgpuDawnWireClientTextureGetFormat(Get());
     return static_cast<TextureFormat>(result);
 }
 uint32_t Texture::GetHeight() const {
-    auto result = wgpuTextureGetHeight(Get());
+    auto result = wgpuDawnWireClientTextureGetHeight(Get());
     return result;
 }
 uint32_t Texture::GetMipLevelCount() const {
-    auto result = wgpuTextureGetMipLevelCount(Get());
+    auto result = wgpuDawnWireClientTextureGetMipLevelCount(Get());
     return result;
 }
 uint32_t Texture::GetSampleCount() const {
-    auto result = wgpuTextureGetSampleCount(Get());
+    auto result = wgpuDawnWireClientTextureGetSampleCount(Get());
     return result;
 }
 TextureUsage Texture::GetUsage() const {
-    auto result = wgpuTextureGetUsage(Get());
+    auto result = wgpuDawnWireClientTextureGetUsage(Get());
     return static_cast<TextureUsage>(result);
 }
 uint32_t Texture::GetWidth() const {
-    auto result = wgpuTextureGetWidth(Get());
+    auto result = wgpuDawnWireClientTextureGetWidth(Get());
     return result;
 }
 void Texture::SetLabel(char const * label) const {
-    wgpuTextureSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientTextureSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void Texture::WGPUAddRef(WGPUTexture handle) {
     if (handle != nullptr) {
-        wgpuTextureAddRef(handle);
+        wgpuDawnWireClientTextureAddRef(handle);
     }
 }
 void Texture::WGPURelease(WGPUTexture handle) {
     if (handle != nullptr) {
-        wgpuTextureRelease(handle);
+        wgpuDawnWireClientTextureRelease(handle);
     }
 }
 static_assert(sizeof(Texture) == sizeof(WGPUTexture), "sizeof mismatch for Texture");
@@ -8902,37 +8869,225 @@ static_assert(alignof(Texture) == alignof(WGPUTexture), "alignof mismatch for Te
 // TextureView implementation
 
 void TextureView::SetLabel(char const * label) const {
-    wgpuTextureViewSetLabel(Get(), reinterpret_cast<char const * >(label));
+    wgpuDawnWireClientTextureViewSetLabel(Get(), reinterpret_cast<char const * >(label));
 }
 
 
 void TextureView::WGPUAddRef(WGPUTextureView handle) {
     if (handle != nullptr) {
-        wgpuTextureViewAddRef(handle);
+        wgpuDawnWireClientTextureViewAddRef(handle);
     }
 }
 void TextureView::WGPURelease(WGPUTextureView handle) {
     if (handle != nullptr) {
-        wgpuTextureViewRelease(handle);
+        wgpuDawnWireClientTextureViewRelease(handle);
     }
 }
 static_assert(sizeof(TextureView) == sizeof(WGPUTextureView), "sizeof mismatch for TextureView");
 static_assert(alignof(TextureView) == alignof(WGPUTextureView), "alignof mismatch for TextureView");
 
 
+}  // namespace dawn::wire::client
+
+using Adapter = dawn::wire::client::Adapter;
+using BindGroup = dawn::wire::client::BindGroup;
+using BindGroupLayout = dawn::wire::client::BindGroupLayout;
+using Buffer = dawn::wire::client::Buffer;
+using CommandBuffer = dawn::wire::client::CommandBuffer;
+using CommandEncoder = dawn::wire::client::CommandEncoder;
+using ComputePassEncoder = dawn::wire::client::ComputePassEncoder;
+using ComputePipeline = dawn::wire::client::ComputePipeline;
+using Device = dawn::wire::client::Device;
+using ExternalTexture = dawn::wire::client::ExternalTexture;
+using Instance = dawn::wire::client::Instance;
+using PipelineLayout = dawn::wire::client::PipelineLayout;
+using QuerySet = dawn::wire::client::QuerySet;
+using Queue = dawn::wire::client::Queue;
+using RenderBundle = dawn::wire::client::RenderBundle;
+using RenderBundleEncoder = dawn::wire::client::RenderBundleEncoder;
+using RenderPassEncoder = dawn::wire::client::RenderPassEncoder;
+using RenderPipeline = dawn::wire::client::RenderPipeline;
+using Sampler = dawn::wire::client::Sampler;
+using ShaderModule = dawn::wire::client::ShaderModule;
+using SharedBufferMemory = dawn::wire::client::SharedBufferMemory;
+using SharedFence = dawn::wire::client::SharedFence;
+using SharedTextureMemory = dawn::wire::client::SharedTextureMemory;
+using Surface = dawn::wire::client::Surface;
+using SwapChain = dawn::wire::client::SwapChain;
+using Texture = dawn::wire::client::Texture;
+using TextureView = dawn::wire::client::TextureView;
+
+using AdapterInfo = dawn::wire::client::AdapterInfo;
+using AdapterProperties = dawn::wire::client::AdapterProperties;
+using AdapterPropertiesD3D = dawn::wire::client::AdapterPropertiesD3D;
+using AdapterPropertiesVk = dawn::wire::client::AdapterPropertiesVk;
+using BindGroupEntry = dawn::wire::client::BindGroupEntry;
+using BlendComponent = dawn::wire::client::BlendComponent;
+using BufferBindingLayout = dawn::wire::client::BufferBindingLayout;
+using BufferDescriptor = dawn::wire::client::BufferDescriptor;
+using BufferHostMappedPointer = dawn::wire::client::BufferHostMappedPointer;
+using BufferMapCallbackInfo = dawn::wire::client::BufferMapCallbackInfo;
+using Color = dawn::wire::client::Color;
+using ColorTargetStateExpandResolveTextureDawn = dawn::wire::client::ColorTargetStateExpandResolveTextureDawn;
+using CommandBufferDescriptor = dawn::wire::client::CommandBufferDescriptor;
+using CommandEncoderDescriptor = dawn::wire::client::CommandEncoderDescriptor;
+using CompilationInfoCallbackInfo = dawn::wire::client::CompilationInfoCallbackInfo;
+using CompilationMessage = dawn::wire::client::CompilationMessage;
+using ComputePassTimestampWrites = dawn::wire::client::ComputePassTimestampWrites;
+using ConstantEntry = dawn::wire::client::ConstantEntry;
+using CopyTextureForBrowserOptions = dawn::wire::client::CopyTextureForBrowserOptions;
+using CreateComputePipelineAsyncCallbackInfo = dawn::wire::client::CreateComputePipelineAsyncCallbackInfo;
+using CreateRenderPipelineAsyncCallbackInfo = dawn::wire::client::CreateRenderPipelineAsyncCallbackInfo;
+using DawnWGSLBlocklist = dawn::wire::client::DawnWGSLBlocklist;
+using DawnAdapterPropertiesPowerPreference = dawn::wire::client::DawnAdapterPropertiesPowerPreference;
+using DawnBufferDescriptorErrorInfoFromWireClient = dawn::wire::client::DawnBufferDescriptorErrorInfoFromWireClient;
+using DawnCacheDeviceDescriptor = dawn::wire::client::DawnCacheDeviceDescriptor;
+using DawnComputePipelineFullSubgroups = dawn::wire::client::DawnComputePipelineFullSubgroups;
+using DawnEncoderInternalUsageDescriptor = dawn::wire::client::DawnEncoderInternalUsageDescriptor;
+using DawnExperimentalSubgroupLimits = dawn::wire::client::DawnExperimentalSubgroupLimits;
+using DawnRenderPassColorAttachmentRenderToSingleSampled = dawn::wire::client::DawnRenderPassColorAttachmentRenderToSingleSampled;
+using DawnShaderModuleSPIRVOptionsDescriptor = dawn::wire::client::DawnShaderModuleSPIRVOptionsDescriptor;
+using DawnTextureInternalUsageDescriptor = dawn::wire::client::DawnTextureInternalUsageDescriptor;
+using DawnTogglesDescriptor = dawn::wire::client::DawnTogglesDescriptor;
+using DawnWireWGSLControl = dawn::wire::client::DawnWireWGSLControl;
+using DepthStencilStateDepthWriteDefinedDawn = dawn::wire::client::DepthStencilStateDepthWriteDefinedDawn;
+using DeviceLostCallbackInfo = dawn::wire::client::DeviceLostCallbackInfo;
+using DrmFormatProperties = dawn::wire::client::DrmFormatProperties;
+using Extent2D = dawn::wire::client::Extent2D;
+using Extent3D = dawn::wire::client::Extent3D;
+using ExternalTextureBindingEntry = dawn::wire::client::ExternalTextureBindingEntry;
+using ExternalTextureBindingLayout = dawn::wire::client::ExternalTextureBindingLayout;
+using FormatCapabilities = dawn::wire::client::FormatCapabilities;
+using Future = dawn::wire::client::Future;
+using InstanceFeatures = dawn::wire::client::InstanceFeatures;
+using Limits = dawn::wire::client::Limits;
+using MemoryHeapInfo = dawn::wire::client::MemoryHeapInfo;
+using MultisampleState = dawn::wire::client::MultisampleState;
+using Origin2D = dawn::wire::client::Origin2D;
+using Origin3D = dawn::wire::client::Origin3D;
+using PipelineLayoutDescriptor = dawn::wire::client::PipelineLayoutDescriptor;
+using PipelineLayoutStorageAttachment = dawn::wire::client::PipelineLayoutStorageAttachment;
+using PopErrorScopeCallbackInfo = dawn::wire::client::PopErrorScopeCallbackInfo;
+using PrimitiveDepthClipControl = dawn::wire::client::PrimitiveDepthClipControl;
+using PrimitiveState = dawn::wire::client::PrimitiveState;
+using QuerySetDescriptor = dawn::wire::client::QuerySetDescriptor;
+using QueueDescriptor = dawn::wire::client::QueueDescriptor;
+using QueueWorkDoneCallbackInfo = dawn::wire::client::QueueWorkDoneCallbackInfo;
+using RenderBundleDescriptor = dawn::wire::client::RenderBundleDescriptor;
+using RenderBundleEncoderDescriptor = dawn::wire::client::RenderBundleEncoderDescriptor;
+using RenderPassDepthStencilAttachment = dawn::wire::client::RenderPassDepthStencilAttachment;
+using RenderPassDescriptorMaxDrawCount = dawn::wire::client::RenderPassDescriptorMaxDrawCount;
+using RenderPassTimestampWrites = dawn::wire::client::RenderPassTimestampWrites;
+using RequestAdapterCallbackInfo = dawn::wire::client::RequestAdapterCallbackInfo;
+using RequestAdapterOptions = dawn::wire::client::RequestAdapterOptions;
+using RequestDeviceCallbackInfo = dawn::wire::client::RequestDeviceCallbackInfo;
+using SamplerBindingLayout = dawn::wire::client::SamplerBindingLayout;
+using SamplerDescriptor = dawn::wire::client::SamplerDescriptor;
+using ShaderModuleSPIRVDescriptor = dawn::wire::client::ShaderModuleSPIRVDescriptor;
+using ShaderModuleWGSLDescriptor = dawn::wire::client::ShaderModuleWGSLDescriptor;
+using ShaderModuleCompilationOptions = dawn::wire::client::ShaderModuleCompilationOptions;
+using ShaderModuleDescriptor = dawn::wire::client::ShaderModuleDescriptor;
+using SharedBufferMemoryBeginAccessDescriptor = dawn::wire::client::SharedBufferMemoryBeginAccessDescriptor;
+using SharedBufferMemoryDescriptor = dawn::wire::client::SharedBufferMemoryDescriptor;
+using SharedBufferMemoryEndAccessState = dawn::wire::client::SharedBufferMemoryEndAccessState;
+using SharedBufferMemoryProperties = dawn::wire::client::SharedBufferMemoryProperties;
+using SharedFenceDXGISharedHandleDescriptor = dawn::wire::client::SharedFenceDXGISharedHandleDescriptor;
+using SharedFenceDXGISharedHandleExportInfo = dawn::wire::client::SharedFenceDXGISharedHandleExportInfo;
+using SharedFenceMTLSharedEventDescriptor = dawn::wire::client::SharedFenceMTLSharedEventDescriptor;
+using SharedFenceMTLSharedEventExportInfo = dawn::wire::client::SharedFenceMTLSharedEventExportInfo;
+using SharedFenceDescriptor = dawn::wire::client::SharedFenceDescriptor;
+using SharedFenceExportInfo = dawn::wire::client::SharedFenceExportInfo;
+using SharedFenceVkSemaphoreOpaqueFDDescriptor = dawn::wire::client::SharedFenceVkSemaphoreOpaqueFDDescriptor;
+using SharedFenceVkSemaphoreOpaqueFDExportInfo = dawn::wire::client::SharedFenceVkSemaphoreOpaqueFDExportInfo;
+using SharedFenceVkSemaphoreSyncFDDescriptor = dawn::wire::client::SharedFenceVkSemaphoreSyncFDDescriptor;
+using SharedFenceVkSemaphoreSyncFDExportInfo = dawn::wire::client::SharedFenceVkSemaphoreSyncFDExportInfo;
+using SharedFenceVkSemaphoreZirconHandleDescriptor = dawn::wire::client::SharedFenceVkSemaphoreZirconHandleDescriptor;
+using SharedFenceVkSemaphoreZirconHandleExportInfo = dawn::wire::client::SharedFenceVkSemaphoreZirconHandleExportInfo;
+using SharedTextureMemoryD3DSwapchainBeginState = dawn::wire::client::SharedTextureMemoryD3DSwapchainBeginState;
+using SharedTextureMemoryDXGISharedHandleDescriptor = dawn::wire::client::SharedTextureMemoryDXGISharedHandleDescriptor;
+using SharedTextureMemoryEGLImageDescriptor = dawn::wire::client::SharedTextureMemoryEGLImageDescriptor;
+using SharedTextureMemoryIOSurfaceDescriptor = dawn::wire::client::SharedTextureMemoryIOSurfaceDescriptor;
+using SharedTextureMemoryAHardwareBufferDescriptor = dawn::wire::client::SharedTextureMemoryAHardwareBufferDescriptor;
+using SharedTextureMemoryBeginAccessDescriptor = dawn::wire::client::SharedTextureMemoryBeginAccessDescriptor;
+using SharedTextureMemoryDescriptor = dawn::wire::client::SharedTextureMemoryDescriptor;
+using SharedTextureMemoryDmaBufPlane = dawn::wire::client::SharedTextureMemoryDmaBufPlane;
+using SharedTextureMemoryEndAccessState = dawn::wire::client::SharedTextureMemoryEndAccessState;
+using SharedTextureMemoryOpaqueFDDescriptor = dawn::wire::client::SharedTextureMemoryOpaqueFDDescriptor;
+using SharedTextureMemoryVkDedicatedAllocationDescriptor = dawn::wire::client::SharedTextureMemoryVkDedicatedAllocationDescriptor;
+using SharedTextureMemoryVkImageLayoutBeginState = dawn::wire::client::SharedTextureMemoryVkImageLayoutBeginState;
+using SharedTextureMemoryVkImageLayoutEndState = dawn::wire::client::SharedTextureMemoryVkImageLayoutEndState;
+using SharedTextureMemoryZirconHandleDescriptor = dawn::wire::client::SharedTextureMemoryZirconHandleDescriptor;
+using StaticSamplerBindingLayout = dawn::wire::client::StaticSamplerBindingLayout;
+using StencilFaceState = dawn::wire::client::StencilFaceState;
+using StorageTextureBindingLayout = dawn::wire::client::StorageTextureBindingLayout;
+using SurfaceCapabilities = dawn::wire::client::SurfaceCapabilities;
+using SurfaceConfiguration = dawn::wire::client::SurfaceConfiguration;
+using SurfaceDescriptor = dawn::wire::client::SurfaceDescriptor;
+using SurfaceDescriptorFromAndroidNativeWindow = dawn::wire::client::SurfaceDescriptorFromAndroidNativeWindow;
+using SurfaceDescriptorFromMetalLayer = dawn::wire::client::SurfaceDescriptorFromMetalLayer;
+using SurfaceDescriptorFromWaylandSurface = dawn::wire::client::SurfaceDescriptorFromWaylandSurface;
+using SurfaceDescriptorFromWindowsHWND = dawn::wire::client::SurfaceDescriptorFromWindowsHWND;
+using SurfaceDescriptorFromWindowsCoreWindow = dawn::wire::client::SurfaceDescriptorFromWindowsCoreWindow;
+using SurfaceDescriptorFromWindowsSwapChainPanel = dawn::wire::client::SurfaceDescriptorFromWindowsSwapChainPanel;
+using SurfaceDescriptorFromXcbWindow = dawn::wire::client::SurfaceDescriptorFromXcbWindow;
+using SurfaceDescriptorFromXlibWindow = dawn::wire::client::SurfaceDescriptorFromXlibWindow;
+using SurfaceTexture = dawn::wire::client::SurfaceTexture;
+using SwapChainDescriptor = dawn::wire::client::SwapChainDescriptor;
+using TextureBindingLayout = dawn::wire::client::TextureBindingLayout;
+using TextureBindingViewDimensionDescriptor = dawn::wire::client::TextureBindingViewDimensionDescriptor;
+using TextureDataLayout = dawn::wire::client::TextureDataLayout;
+using TextureViewDescriptor = dawn::wire::client::TextureViewDescriptor;
+using UncapturedErrorCallbackInfo = dawn::wire::client::UncapturedErrorCallbackInfo;
+using VertexAttribute = dawn::wire::client::VertexAttribute;
+using YCbCrVkDescriptor = dawn::wire::client::YCbCrVkDescriptor;
+using AHardwareBufferProperties = dawn::wire::client::AHardwareBufferProperties;
+using AdapterPropertiesMemoryHeaps = dawn::wire::client::AdapterPropertiesMemoryHeaps;
+using BindGroupDescriptor = dawn::wire::client::BindGroupDescriptor;
+using BindGroupLayoutEntry = dawn::wire::client::BindGroupLayoutEntry;
+using BlendState = dawn::wire::client::BlendState;
+using CompilationInfo = dawn::wire::client::CompilationInfo;
+using ComputePassDescriptor = dawn::wire::client::ComputePassDescriptor;
+using DepthStencilState = dawn::wire::client::DepthStencilState;
+using DrmFormatCapabilities = dawn::wire::client::DrmFormatCapabilities;
+using ExternalTextureDescriptor = dawn::wire::client::ExternalTextureDescriptor;
+using FutureWaitInfo = dawn::wire::client::FutureWaitInfo;
+using ImageCopyBuffer = dawn::wire::client::ImageCopyBuffer;
+using ImageCopyExternalTexture = dawn::wire::client::ImageCopyExternalTexture;
+using ImageCopyTexture = dawn::wire::client::ImageCopyTexture;
+using InstanceDescriptor = dawn::wire::client::InstanceDescriptor;
+using PipelineLayoutPixelLocalStorage = dawn::wire::client::PipelineLayoutPixelLocalStorage;
+using ProgrammableStageDescriptor = dawn::wire::client::ProgrammableStageDescriptor;
+using RenderPassColorAttachment = dawn::wire::client::RenderPassColorAttachment;
+using RenderPassStorageAttachment = dawn::wire::client::RenderPassStorageAttachment;
+using RequiredLimits = dawn::wire::client::RequiredLimits;
+using SharedTextureMemoryAHardwareBufferProperties = dawn::wire::client::SharedTextureMemoryAHardwareBufferProperties;
+using SharedTextureMemoryDmaBufDescriptor = dawn::wire::client::SharedTextureMemoryDmaBufDescriptor;
+using SharedTextureMemoryProperties = dawn::wire::client::SharedTextureMemoryProperties;
+using SupportedLimits = dawn::wire::client::SupportedLimits;
+using TextureDescriptor = dawn::wire::client::TextureDescriptor;
+using VertexBufferLayout = dawn::wire::client::VertexBufferLayout;
+using BindGroupLayoutDescriptor = dawn::wire::client::BindGroupLayoutDescriptor;
+using ColorTargetState = dawn::wire::client::ColorTargetState;
+using ComputePipelineDescriptor = dawn::wire::client::ComputePipelineDescriptor;
+using DeviceDescriptor = dawn::wire::client::DeviceDescriptor;
+using RenderPassDescriptor = dawn::wire::client::RenderPassDescriptor;
+using RenderPassPixelLocalStorage = dawn::wire::client::RenderPassPixelLocalStorage;
+using VertexState = dawn::wire::client::VertexState;
+using FragmentState = dawn::wire::client::FragmentState;
+using RenderPipelineDescriptor = dawn::wire::client::RenderPipelineDescriptor;
 
 
 // Free Functions
 static inline Instance CreateInstance(InstanceDescriptor const * descriptor = nullptr) {
-    auto result = wgpuCreateInstance(reinterpret_cast<WGPUInstanceDescriptor const * >(descriptor));
+    auto result = wgpuDawnWireClientCreateInstance(reinterpret_cast<WGPUInstanceDescriptor const * >(descriptor));
     return Instance::Acquire(result);
 }
 static inline Status GetInstanceFeatures(InstanceFeatures * features) {
-    auto result = wgpuGetInstanceFeatures(reinterpret_cast<WGPUInstanceFeatures * >(features));
+    auto result = wgpuDawnWireClientGetInstanceFeatures(reinterpret_cast<WGPUInstanceFeatures * >(features));
     return static_cast<Status>(result);
 }
 static inline Proc GetProcAddress(Device device, char const * procName) {
-    auto result = wgpuGetProcAddress(device.Get(), reinterpret_cast<char const * >(procName));
+    auto result = wgpuDawnWireClientGetProcAddress(device.Get(), reinterpret_cast<char const * >(procName));
     return reinterpret_cast<Proc>(result);
 }
 
@@ -8982,4 +9137,4 @@ struct hash<wgpu::Bool> {
 };
 }  // namespace std
 
-#endif // WEBGPU_CPP_H_
+#endif // DAWN_WIRE_CLIENT_WEBGPU_CPP_H_
