@@ -25,7 +25,7 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef __EMSCRIPTEN__
-#error "Do not include this header. Emscripten already provides headers needed for WebGPU."
+#error "This header is for native Dawn. Use Dawn's or Emscripten's Emscripten bindings instead."
 #endif
 #ifndef DAWN_WIRE_CLIENT_WEBGPU_CPP_H_
 #define DAWN_WIRE_CLIENT_WEBGPU_CPP_H_
@@ -303,6 +303,8 @@ enum class FeatureName : uint32_t {
     RG11B10UfloatRenderable = WGPUFeatureName_RG11B10UfloatRenderable,
     BGRA8UnormStorage = WGPUFeatureName_BGRA8UnormStorage,
     Float32Filterable = WGPUFeatureName_Float32Filterable,
+    Subgroups = WGPUFeatureName_Subgroups,
+    SubgroupsF16 = WGPUFeatureName_SubgroupsF16,
     DawnInternalUsages = WGPUFeatureName_DawnInternalUsages,
     DawnMultiPlanarFormats = WGPUFeatureName_DawnMultiPlanarFormats,
     DawnNative = WGPUFeatureName_DawnNative,
@@ -852,7 +854,7 @@ static_assert(sizeof(WaitStatus) == sizeof(WGPUWaitStatus), "sizeof mismatch for
 static_assert(alignof(WaitStatus) == alignof(WGPUWaitStatus), "alignof mismatch for WaitStatus");
 
 
-enum class BufferUsage : uint32_t {
+enum class BufferUsage : uint64_t {
     None = WGPUBufferUsage_None,
     MapRead = WGPUBufferUsage_MapRead,
     MapWrite = WGPUBufferUsage_MapWrite,
@@ -865,10 +867,10 @@ enum class BufferUsage : uint32_t {
     Indirect = WGPUBufferUsage_Indirect,
     QueryResolve = WGPUBufferUsage_QueryResolve,
 };
-static_assert(sizeof(BufferUsage) == sizeof(WGPUBufferUsageFlags), "sizeof mismatch for BufferUsage");
-static_assert(alignof(BufferUsage) == alignof(WGPUBufferUsageFlags), "alignof mismatch for BufferUsage");
+static_assert(sizeof(BufferUsage) == sizeof(WGPUBufferUsage), "sizeof mismatch for BufferUsage");
+static_assert(alignof(BufferUsage) == alignof(WGPUBufferUsage), "alignof mismatch for BufferUsage");
 
-enum class ColorWriteMask : uint32_t {
+enum class ColorWriteMask : uint64_t {
     None = WGPUColorWriteMask_None,
     Red = WGPUColorWriteMask_Red,
     Green = WGPUColorWriteMask_Green,
@@ -876,37 +878,37 @@ enum class ColorWriteMask : uint32_t {
     Alpha = WGPUColorWriteMask_Alpha,
     All = WGPUColorWriteMask_All,
 };
-static_assert(sizeof(ColorWriteMask) == sizeof(WGPUColorWriteMaskFlags), "sizeof mismatch for ColorWriteMask");
-static_assert(alignof(ColorWriteMask) == alignof(WGPUColorWriteMaskFlags), "alignof mismatch for ColorWriteMask");
+static_assert(sizeof(ColorWriteMask) == sizeof(WGPUColorWriteMask), "sizeof mismatch for ColorWriteMask");
+static_assert(alignof(ColorWriteMask) == alignof(WGPUColorWriteMask), "alignof mismatch for ColorWriteMask");
 
-enum class HeapProperty : uint32_t {
+enum class HeapProperty : uint64_t {
     DeviceLocal = WGPUHeapProperty_DeviceLocal,
     HostVisible = WGPUHeapProperty_HostVisible,
     HostCoherent = WGPUHeapProperty_HostCoherent,
     HostUncached = WGPUHeapProperty_HostUncached,
     HostCached = WGPUHeapProperty_HostCached,
 };
-static_assert(sizeof(HeapProperty) == sizeof(WGPUHeapPropertyFlags), "sizeof mismatch for HeapProperty");
-static_assert(alignof(HeapProperty) == alignof(WGPUHeapPropertyFlags), "alignof mismatch for HeapProperty");
+static_assert(sizeof(HeapProperty) == sizeof(WGPUHeapProperty), "sizeof mismatch for HeapProperty");
+static_assert(alignof(HeapProperty) == alignof(WGPUHeapProperty), "alignof mismatch for HeapProperty");
 
-enum class MapMode : uint32_t {
+enum class MapMode : uint64_t {
     None = WGPUMapMode_None,
     Read = WGPUMapMode_Read,
     Write = WGPUMapMode_Write,
 };
-static_assert(sizeof(MapMode) == sizeof(WGPUMapModeFlags), "sizeof mismatch for MapMode");
-static_assert(alignof(MapMode) == alignof(WGPUMapModeFlags), "alignof mismatch for MapMode");
+static_assert(sizeof(MapMode) == sizeof(WGPUMapMode), "sizeof mismatch for MapMode");
+static_assert(alignof(MapMode) == alignof(WGPUMapMode), "alignof mismatch for MapMode");
 
-enum class ShaderStage : uint32_t {
+enum class ShaderStage : uint64_t {
     None = WGPUShaderStage_None,
     Vertex = WGPUShaderStage_Vertex,
     Fragment = WGPUShaderStage_Fragment,
     Compute = WGPUShaderStage_Compute,
 };
-static_assert(sizeof(ShaderStage) == sizeof(WGPUShaderStageFlags), "sizeof mismatch for ShaderStage");
-static_assert(alignof(ShaderStage) == alignof(WGPUShaderStageFlags), "alignof mismatch for ShaderStage");
+static_assert(sizeof(ShaderStage) == sizeof(WGPUShaderStage), "sizeof mismatch for ShaderStage");
+static_assert(alignof(ShaderStage) == alignof(WGPUShaderStage), "alignof mismatch for ShaderStage");
 
-enum class TextureUsage : uint32_t {
+enum class TextureUsage : uint64_t {
     None = WGPUTextureUsage_None,
     CopySrc = WGPUTextureUsage_CopySrc,
     CopyDst = WGPUTextureUsage_CopyDst,
@@ -916,8 +918,8 @@ enum class TextureUsage : uint32_t {
     TransientAttachment = WGPUTextureUsage_TransientAttachment,
     StorageAttachment = WGPUTextureUsage_StorageAttachment,
 };
-static_assert(sizeof(TextureUsage) == sizeof(WGPUTextureUsageFlags), "sizeof mismatch for TextureUsage");
-static_assert(alignof(TextureUsage) == alignof(WGPUTextureUsageFlags), "alignof mismatch for TextureUsage");
+static_assert(sizeof(TextureUsage) == sizeof(WGPUTextureUsage), "sizeof mismatch for TextureUsage");
+static_assert(alignof(TextureUsage) == alignof(WGPUTextureUsage), "alignof mismatch for TextureUsage");
 
 
 using BufferMapCallback = WGPUBufferMapCallback;
@@ -1887,6 +1889,7 @@ struct AdapterInfo {
     Bool const compatibilityMode = false;
 
   private:
+    inline void FreeMembers();
     static inline void Reset(AdapterInfo& value);
 };
 
@@ -1911,6 +1914,7 @@ struct AdapterProperties {
     Bool const compatibilityMode = false;
 
   private:
+    inline void FreeMembers();
     static inline void Reset(AdapterProperties& value);
 };
 
@@ -2677,6 +2681,7 @@ struct SharedBufferMemoryEndAccessState {
     uint64_t const * const signaledValues = {};
 
   private:
+    inline void FreeMembers();
     static inline void Reset(SharedBufferMemoryEndAccessState& value);
 };
 
@@ -2926,6 +2931,7 @@ struct SharedTextureMemoryEndAccessState {
     uint64_t const * const signaledValues = {};
 
   private:
+    inline void FreeMembers();
     static inline void Reset(SharedTextureMemoryEndAccessState& value);
 };
 
@@ -3045,6 +3051,7 @@ struct SurfaceCapabilities {
     CompositeAlphaMode const * const alphaModes = {};
 
   private:
+    inline void FreeMembers();
     static inline void Reset(SurfaceCapabilities& value);
 };
 
@@ -3299,6 +3306,7 @@ struct AdapterPropertiesMemoryHeaps : ChainedStructOut {
     MemoryHeapInfo const * const heapInfo = {};
 
   private:
+    inline void FreeMembers();
     static inline void Reset(AdapterPropertiesMemoryHeaps& value);
 };
 
@@ -3381,6 +3389,7 @@ struct DrmFormatCapabilities : ChainedStructOut {
     DrmFormatProperties const * const properties = {};
 
   private:
+    inline void FreeMembers();
     static inline void Reset(DrmFormatCapabilities& value);
 };
 
@@ -3716,10 +3725,7 @@ struct DeviceDescriptor : protected detail::DeviceDescriptor {
 // AdapterInfo implementation
 AdapterInfo::AdapterInfo() = default;
 AdapterInfo::~AdapterInfo() {
-    if (this->vendor != nullptr || this->architecture != nullptr || this->device != nullptr || this->description != nullptr) {
-        wgpuDawnWireClientAdapterInfoFreeMembers(
-            *reinterpret_cast<WGPUAdapterInfo*>(this));
-    }
+    FreeMembers();
 }
 
 AdapterInfo::AdapterInfo(AdapterInfo&& rhs)
@@ -3739,7 +3745,7 @@ AdapterInfo& AdapterInfo::operator=(AdapterInfo&& rhs) {
     if (&rhs == this) {
         return *this;
     }
-    this->~AdapterInfo();
+    FreeMembers();
     ::wgpu::detail::AsNonConstReference(this->vendor) = std::move(rhs.vendor);
     ::wgpu::detail::AsNonConstReference(this->architecture) = std::move(rhs.architecture);
     ::wgpu::detail::AsNonConstReference(this->device) = std::move(rhs.device);
@@ -3753,7 +3759,14 @@ AdapterInfo& AdapterInfo::operator=(AdapterInfo&& rhs) {
     return *this;
 }
 
-    // static
+void AdapterInfo::FreeMembers() {
+    if (this->vendor != nullptr || this->architecture != nullptr || this->device != nullptr || this->description != nullptr) {
+        wgpuDawnWireClientAdapterInfoFreeMembers(
+            *reinterpret_cast<WGPUAdapterInfo*>(this));
+    }
+}
+
+// static
 void AdapterInfo::Reset(AdapterInfo& value) {
     AdapterInfo defaultValue{};
     ::wgpu::detail::AsNonConstReference(value.vendor) = defaultValue.vendor;
@@ -3797,10 +3810,7 @@ static_assert(offsetof(AdapterInfo, compatibilityMode) == offsetof(WGPUAdapterIn
 // AdapterProperties implementation
 AdapterProperties::AdapterProperties() = default;
 AdapterProperties::~AdapterProperties() {
-    if (this->vendorName != nullptr || this->architecture != nullptr || this->name != nullptr || this->driverDescription != nullptr) {
-        wgpuDawnWireClientAdapterPropertiesFreeMembers(
-            *reinterpret_cast<WGPUAdapterProperties*>(this));
-    }
+    FreeMembers();
 }
 
 AdapterProperties::AdapterProperties(AdapterProperties&& rhs)
@@ -3820,7 +3830,7 @@ AdapterProperties& AdapterProperties::operator=(AdapterProperties&& rhs) {
     if (&rhs == this) {
         return *this;
     }
-    this->~AdapterProperties();
+    FreeMembers();
     ::wgpu::detail::AsNonConstReference(this->vendorID) = std::move(rhs.vendorID);
     ::wgpu::detail::AsNonConstReference(this->vendorName) = std::move(rhs.vendorName);
     ::wgpu::detail::AsNonConstReference(this->architecture) = std::move(rhs.architecture);
@@ -3834,7 +3844,14 @@ AdapterProperties& AdapterProperties::operator=(AdapterProperties&& rhs) {
     return *this;
 }
 
-    // static
+void AdapterProperties::FreeMembers() {
+    if (this->vendorName != nullptr || this->architecture != nullptr || this->name != nullptr || this->driverDescription != nullptr) {
+        wgpuDawnWireClientAdapterPropertiesFreeMembers(
+            *reinterpret_cast<WGPUAdapterProperties*>(this));
+    }
+}
+
+// static
 void AdapterProperties::Reset(AdapterProperties& value) {
     AdapterProperties defaultValue{};
     ::wgpu::detail::AsNonConstReference(value.vendorID) = defaultValue.vendorID;
@@ -5246,10 +5263,7 @@ static_assert(offsetof(SharedBufferMemoryDescriptor, label) == offsetof(WGPUShar
 // SharedBufferMemoryEndAccessState implementation
 SharedBufferMemoryEndAccessState::SharedBufferMemoryEndAccessState() = default;
 SharedBufferMemoryEndAccessState::~SharedBufferMemoryEndAccessState() {
-    if (this->fences != nullptr || this->signaledValues != nullptr) {
-        wgpuDawnWireClientSharedBufferMemoryEndAccessStateFreeMembers(
-            *reinterpret_cast<WGPUSharedBufferMemoryEndAccessState*>(this));
-    }
+    FreeMembers();
 }
 
 SharedBufferMemoryEndAccessState::SharedBufferMemoryEndAccessState(SharedBufferMemoryEndAccessState&& rhs)
@@ -5264,7 +5278,7 @@ SharedBufferMemoryEndAccessState& SharedBufferMemoryEndAccessState::operator=(Sh
     if (&rhs == this) {
         return *this;
     }
-    this->~SharedBufferMemoryEndAccessState();
+    FreeMembers();
     ::wgpu::detail::AsNonConstReference(this->initialized) = std::move(rhs.initialized);
     ::wgpu::detail::AsNonConstReference(this->fenceCount) = std::move(rhs.fenceCount);
     ::wgpu::detail::AsNonConstReference(this->fences) = std::move(rhs.fences);
@@ -5273,7 +5287,14 @@ SharedBufferMemoryEndAccessState& SharedBufferMemoryEndAccessState::operator=(Sh
     return *this;
 }
 
-    // static
+void SharedBufferMemoryEndAccessState::FreeMembers() {
+    if (this->fences != nullptr || this->signaledValues != nullptr) {
+        wgpuDawnWireClientSharedBufferMemoryEndAccessStateFreeMembers(
+            *reinterpret_cast<WGPUSharedBufferMemoryEndAccessState*>(this));
+    }
+}
+
+// static
 void SharedBufferMemoryEndAccessState::Reset(SharedBufferMemoryEndAccessState& value) {
     SharedBufferMemoryEndAccessState defaultValue{};
     ::wgpu::detail::AsNonConstReference(value.initialized) = defaultValue.initialized;
@@ -5700,10 +5721,7 @@ static_assert(offsetof(SharedTextureMemoryDmaBufPlane, stride) == offsetof(WGPUS
 // SharedTextureMemoryEndAccessState implementation
 SharedTextureMemoryEndAccessState::SharedTextureMemoryEndAccessState() = default;
 SharedTextureMemoryEndAccessState::~SharedTextureMemoryEndAccessState() {
-    if (this->fences != nullptr || this->signaledValues != nullptr) {
-        wgpuDawnWireClientSharedTextureMemoryEndAccessStateFreeMembers(
-            *reinterpret_cast<WGPUSharedTextureMemoryEndAccessState*>(this));
-    }
+    FreeMembers();
 }
 
 SharedTextureMemoryEndAccessState::SharedTextureMemoryEndAccessState(SharedTextureMemoryEndAccessState&& rhs)
@@ -5718,7 +5736,7 @@ SharedTextureMemoryEndAccessState& SharedTextureMemoryEndAccessState::operator=(
     if (&rhs == this) {
         return *this;
     }
-    this->~SharedTextureMemoryEndAccessState();
+    FreeMembers();
     ::wgpu::detail::AsNonConstReference(this->initialized) = std::move(rhs.initialized);
     ::wgpu::detail::AsNonConstReference(this->fenceCount) = std::move(rhs.fenceCount);
     ::wgpu::detail::AsNonConstReference(this->fences) = std::move(rhs.fences);
@@ -5727,7 +5745,14 @@ SharedTextureMemoryEndAccessState& SharedTextureMemoryEndAccessState::operator=(
     return *this;
 }
 
-    // static
+void SharedTextureMemoryEndAccessState::FreeMembers() {
+    if (this->fences != nullptr || this->signaledValues != nullptr) {
+        wgpuDawnWireClientSharedTextureMemoryEndAccessStateFreeMembers(
+            *reinterpret_cast<WGPUSharedTextureMemoryEndAccessState*>(this));
+    }
+}
+
+// static
 void SharedTextureMemoryEndAccessState::Reset(SharedTextureMemoryEndAccessState& value) {
     SharedTextureMemoryEndAccessState defaultValue{};
     ::wgpu::detail::AsNonConstReference(value.initialized) = defaultValue.initialized;
@@ -5938,10 +5963,7 @@ static_assert(offsetof(StorageTextureBindingLayout, viewDimension) == offsetof(W
 // SurfaceCapabilities implementation
 SurfaceCapabilities::SurfaceCapabilities() = default;
 SurfaceCapabilities::~SurfaceCapabilities() {
-    if (this->formats != nullptr || this->presentModes != nullptr || this->alphaModes != nullptr) {
-        wgpuDawnWireClientSurfaceCapabilitiesFreeMembers(
-            *reinterpret_cast<WGPUSurfaceCapabilities*>(this));
-    }
+    FreeMembers();
 }
 
 SurfaceCapabilities::SurfaceCapabilities(SurfaceCapabilities&& rhs)
@@ -5959,7 +5981,7 @@ SurfaceCapabilities& SurfaceCapabilities::operator=(SurfaceCapabilities&& rhs) {
     if (&rhs == this) {
         return *this;
     }
-    this->~SurfaceCapabilities();
+    FreeMembers();
     ::wgpu::detail::AsNonConstReference(this->usages) = std::move(rhs.usages);
     ::wgpu::detail::AsNonConstReference(this->formatCount) = std::move(rhs.formatCount);
     ::wgpu::detail::AsNonConstReference(this->formats) = std::move(rhs.formats);
@@ -5971,7 +5993,14 @@ SurfaceCapabilities& SurfaceCapabilities::operator=(SurfaceCapabilities&& rhs) {
     return *this;
 }
 
-    // static
+void SurfaceCapabilities::FreeMembers() {
+    if (this->formats != nullptr || this->presentModes != nullptr || this->alphaModes != nullptr) {
+        wgpuDawnWireClientSurfaceCapabilitiesFreeMembers(
+            *reinterpret_cast<WGPUSurfaceCapabilities*>(this));
+    }
+}
+
+// static
 void SurfaceCapabilities::Reset(SurfaceCapabilities& value) {
     SurfaceCapabilities defaultValue{};
     ::wgpu::detail::AsNonConstReference(value.usages) = defaultValue.usages;
@@ -6461,10 +6490,7 @@ AdapterPropertiesMemoryHeaps::AdapterPropertiesMemoryHeaps(AdapterPropertiesMemo
     heapCount(std::move(init.heapCount)), 
     heapInfo(std::move(init.heapInfo)){}
 AdapterPropertiesMemoryHeaps::~AdapterPropertiesMemoryHeaps() {
-    if (this->heapInfo != nullptr) {
-        wgpuDawnWireClientAdapterPropertiesMemoryHeapsFreeMembers(
-            *reinterpret_cast<WGPUAdapterPropertiesMemoryHeaps*>(this));
-    }
+    FreeMembers();
 }
 
 AdapterPropertiesMemoryHeaps::AdapterPropertiesMemoryHeaps(AdapterPropertiesMemoryHeaps&& rhs)
@@ -6477,14 +6503,21 @@ AdapterPropertiesMemoryHeaps& AdapterPropertiesMemoryHeaps::operator=(AdapterPro
     if (&rhs == this) {
         return *this;
     }
-    this->~AdapterPropertiesMemoryHeaps();
+    FreeMembers();
     ::wgpu::detail::AsNonConstReference(this->heapCount) = std::move(rhs.heapCount);
     ::wgpu::detail::AsNonConstReference(this->heapInfo) = std::move(rhs.heapInfo);
     Reset(rhs);
     return *this;
 }
 
-    // static
+void AdapterPropertiesMemoryHeaps::FreeMembers() {
+    if (this->heapInfo != nullptr) {
+        wgpuDawnWireClientAdapterPropertiesMemoryHeapsFreeMembers(
+            *reinterpret_cast<WGPUAdapterPropertiesMemoryHeaps*>(this));
+    }
+}
+
+// static
 void AdapterPropertiesMemoryHeaps::Reset(AdapterPropertiesMemoryHeaps& value) {
     AdapterPropertiesMemoryHeaps defaultValue{};
     ::wgpu::detail::AsNonConstReference(value.heapCount) = defaultValue.heapCount;
@@ -6631,10 +6664,7 @@ DrmFormatCapabilities::DrmFormatCapabilities(DrmFormatCapabilities::Init&& init)
     propertiesCount(std::move(init.propertiesCount)), 
     properties(std::move(init.properties)){}
 DrmFormatCapabilities::~DrmFormatCapabilities() {
-    if (this->properties != nullptr) {
-        wgpuDawnWireClientDrmFormatCapabilitiesFreeMembers(
-            *reinterpret_cast<WGPUDrmFormatCapabilities*>(this));
-    }
+    FreeMembers();
 }
 
 DrmFormatCapabilities::DrmFormatCapabilities(DrmFormatCapabilities&& rhs)
@@ -6647,14 +6677,21 @@ DrmFormatCapabilities& DrmFormatCapabilities::operator=(DrmFormatCapabilities&& 
     if (&rhs == this) {
         return *this;
     }
-    this->~DrmFormatCapabilities();
+    FreeMembers();
     ::wgpu::detail::AsNonConstReference(this->propertiesCount) = std::move(rhs.propertiesCount);
     ::wgpu::detail::AsNonConstReference(this->properties) = std::move(rhs.properties);
     Reset(rhs);
     return *this;
 }
 
-    // static
+void DrmFormatCapabilities::FreeMembers() {
+    if (this->properties != nullptr) {
+        wgpuDawnWireClientDrmFormatCapabilitiesFreeMembers(
+            *reinterpret_cast<WGPUDrmFormatCapabilities*>(this));
+    }
+}
+
+// static
 void DrmFormatCapabilities::Reset(DrmFormatCapabilities& value) {
     DrmFormatCapabilities defaultValue{};
     ::wgpu::detail::AsNonConstReference(value.propertiesCount) = defaultValue.propertiesCount;

@@ -610,6 +610,12 @@ namespace wgpu {
       case FeatureName::Float32Filterable:
         o << "FeatureName::Float32Filterable";
         break;
+      case FeatureName::Subgroups:
+        o << "FeatureName::Subgroups";
+        break;
+      case FeatureName::SubgroupsF16:
+        o << "FeatureName::SubgroupsF16";
+        break;
       case FeatureName::DawnInternalUsages:
         o << "FeatureName::DawnInternalUsages";
         break;

@@ -50,10 +50,10 @@ DAWN_WIRE_EXPORT void const * wgpuDawnWireClientBufferGetConstMappedRange(WGPUBu
 DAWN_WIRE_EXPORT WGPUBufferMapState wgpuDawnWireClientBufferGetMapState(WGPUBuffer buffer) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT void * wgpuDawnWireClientBufferGetMappedRange(WGPUBuffer buffer, size_t offset, size_t size) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT uint64_t wgpuDawnWireClientBufferGetSize(WGPUBuffer buffer) WGPU_FUNCTION_ATTRIBUTE;
-DAWN_WIRE_EXPORT WGPUBufferUsageFlags wgpuDawnWireClientBufferGetUsage(WGPUBuffer buffer) WGPU_FUNCTION_ATTRIBUTE;
-DAWN_WIRE_EXPORT void wgpuDawnWireClientBufferMapAsync(WGPUBuffer buffer, WGPUMapModeFlags mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void * userdata) WGPU_FUNCTION_ATTRIBUTE;
-DAWN_WIRE_EXPORT WGPUFuture wgpuDawnWireClientBufferMapAsync2(WGPUBuffer buffer, WGPUMapModeFlags mode, size_t offset, size_t size, WGPUBufferMapCallbackInfo2 callbackInfo) WGPU_FUNCTION_ATTRIBUTE;
-DAWN_WIRE_EXPORT WGPUFuture wgpuDawnWireClientBufferMapAsyncF(WGPUBuffer buffer, WGPUMapModeFlags mode, size_t offset, size_t size, WGPUBufferMapCallbackInfo callbackInfo) WGPU_FUNCTION_ATTRIBUTE;
+DAWN_WIRE_EXPORT WGPUBufferUsage wgpuDawnWireClientBufferGetUsage(WGPUBuffer buffer) WGPU_FUNCTION_ATTRIBUTE;
+DAWN_WIRE_EXPORT void wgpuDawnWireClientBufferMapAsync(WGPUBuffer buffer, WGPUMapMode mode, size_t offset, size_t size, WGPUBufferMapCallback callback, void * userdata) WGPU_FUNCTION_ATTRIBUTE;
+DAWN_WIRE_EXPORT WGPUFuture wgpuDawnWireClientBufferMapAsync2(WGPUBuffer buffer, WGPUMapMode mode, size_t offset, size_t size, WGPUBufferMapCallbackInfo2 callbackInfo) WGPU_FUNCTION_ATTRIBUTE;
+DAWN_WIRE_EXPORT WGPUFuture wgpuDawnWireClientBufferMapAsyncF(WGPUBuffer buffer, WGPUMapMode mode, size_t offset, size_t size, WGPUBufferMapCallbackInfo callbackInfo) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT void wgpuDawnWireClientBufferSetLabel(WGPUBuffer buffer, char const * label) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT void wgpuDawnWireClientBufferUnmap(WGPUBuffer buffer) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT void wgpuDawnWireClientBufferAddRef(WGPUBuffer buffer) WGPU_FUNCTION_ATTRIBUTE;
@@ -136,7 +136,7 @@ DAWN_WIRE_EXPORT WGPUStatus wgpuDawnWireClientDeviceGetAHardwareBufferProperties
 DAWN_WIRE_EXPORT WGPUAdapter wgpuDawnWireClientDeviceGetAdapter(WGPUDevice device) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT WGPUStatus wgpuDawnWireClientDeviceGetLimits(WGPUDevice device, WGPUSupportedLimits * limits) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT WGPUQueue wgpuDawnWireClientDeviceGetQueue(WGPUDevice device) WGPU_FUNCTION_ATTRIBUTE;
-DAWN_WIRE_EXPORT WGPUTextureUsageFlags wgpuDawnWireClientDeviceGetSupportedSurfaceUsage(WGPUDevice device, WGPUSurface surface) WGPU_FUNCTION_ATTRIBUTE;
+DAWN_WIRE_EXPORT WGPUTextureUsage wgpuDawnWireClientDeviceGetSupportedSurfaceUsage(WGPUDevice device, WGPUSurface surface) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT WGPUBool wgpuDawnWireClientDeviceHasFeature(WGPUDevice device, WGPUFeatureName feature) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT WGPUSharedBufferMemory wgpuDawnWireClientDeviceImportSharedBufferMemory(WGPUDevice device, WGPUSharedBufferMemoryDescriptor const * descriptor) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT WGPUSharedFence wgpuDawnWireClientDeviceImportSharedFence(WGPUDevice device, WGPUSharedFenceDescriptor const * descriptor) WGPU_FUNCTION_ATTRIBUTE;
@@ -320,7 +320,7 @@ DAWN_WIRE_EXPORT WGPUTextureFormat wgpuDawnWireClientTextureGetFormat(WGPUTextur
 DAWN_WIRE_EXPORT uint32_t wgpuDawnWireClientTextureGetHeight(WGPUTexture texture) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT uint32_t wgpuDawnWireClientTextureGetMipLevelCount(WGPUTexture texture) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT uint32_t wgpuDawnWireClientTextureGetSampleCount(WGPUTexture texture) WGPU_FUNCTION_ATTRIBUTE;
-DAWN_WIRE_EXPORT WGPUTextureUsageFlags wgpuDawnWireClientTextureGetUsage(WGPUTexture texture) WGPU_FUNCTION_ATTRIBUTE;
+DAWN_WIRE_EXPORT WGPUTextureUsage wgpuDawnWireClientTextureGetUsage(WGPUTexture texture) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT uint32_t wgpuDawnWireClientTextureGetWidth(WGPUTexture texture) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT void wgpuDawnWireClientTextureSetLabel(WGPUTexture texture, char const * label) WGPU_FUNCTION_ATTRIBUTE;
 DAWN_WIRE_EXPORT void wgpuDawnWireClientTextureAddRef(WGPUTexture texture) WGPU_FUNCTION_ATTRIBUTE;
